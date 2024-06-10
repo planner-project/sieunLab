@@ -1,7 +1,7 @@
 package com.planner.travel.global.auth.basic.controller;
 
 import com.planner.travel.global.auth.basic.dto.request.LoginRequest;
-import com.planner.travel.global.auth.basic.dto.response.SignupRequest;
+import com.planner.travel.global.auth.basic.dto.request.SignupRequest;
 import com.planner.travel.global.auth.basic.service.LoginService;
 import com.planner.travel.global.auth.basic.service.SignupService;
 import com.planner.travel.global.util.CookieUtil;

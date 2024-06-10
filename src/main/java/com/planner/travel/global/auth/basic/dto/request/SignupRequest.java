@@ -1,4 +1,4 @@
-package com.planner.travel.global.auth.basic.dto.response;
+package com.planner.travel.global.auth.basic.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
@@ -16,6 +16,8 @@ public record SignupRequest(
         @Pattern(regexp = "^[a-zA-Z가-힣\\d]+$")
         @Size(min = 2, max = 12)
         String nickname,
+
+        String TempCode,
 
         LocalDate birthday
 ) {}
