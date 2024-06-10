@@ -1,0 +1,33 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+== 회원 가입
+---
+=== 1. 회원 가입 요청/응답
+==== Request
+include::{snippets}/signup/http-request.adoc[]
+include::{snippets}/signup/request-fields.adoc[]
+
+==== Response
+include::{snippets}/signup/http-response.adoc[]
+
+=== 2. 이미 존재 하는 이메일로 회원가입 요청
+==== Response
+include::{snippets}/signup-existent-email/http-response.adoc[]
+
+=== 3. 유효하지 않은 이메일로 회원가입 요청
+==== Response
+include::{snippets}/signup-invalid-email/http-response.adoc[]
+
+=== 4. 유효하지 않은 비밀번호로 회원가입 요청
+==== Response
+include::{snippets}/signup-invalid-password/http-response.adoc[]
+
+=== 5. 유효하지 않은 닉네임으로 회원가입 요청
+==== Response
+include::{snippets}/signup-invalid-nickname/http-response.adoc[]
+

@@ -1,0 +1,491 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 3
+:sectlinks:
+
+== 플래너
+NOTE: _플래너 CUD 후에는 별다른 응답이 반환되지 않습니다. 따라서 리스트 반환을 요청하여 플래너 리스트를 갱신해주세요._
+
+---
+=== 1. 플래너 리스트 반환
+==== 1.1. 로그인 유저의 플래너 리스트 반환
+Parameters::
+
+[cols=2*,options=header]
+|===
+|path variable
+|설명
+
+|userId
+|유저 인덱스
+|===
+
+Request::
+include::{snippets}/getAllPlanners/http-request.adoc[]
+
+Response::
+- 플래너는 인덱스번호가 큰 순서대로 반환됩니다. (제일 최신에 만들어진 순으로 반환됩니다.)
+include::{snippets}/getAllPlanners/response-fields.adoc[]
+include::{snippets}/getAllPlanners/http-response.adoc[]
+
+==== 1.2. 다른 유저의 플래너 리스트 반환
+Parameters::
+
+[cols=2*,options=header]
+|===
+|path variable
+|설명
+
+|userId
+|유저 인덱스
+|===
+
+Request::
+include::{snippets}/getAllPlannersOfOtherUser/http-request.adoc[]
+
+Response::
+- 플래너는 인덱스번호가 큰 순서대로 반환됩니다. (제일 최신에 만들어진 순으로 반환됩니다.)
+- 다른 유저의 플래너 리스트를 불러올 때 `isPrivate` 이 true 인 경우는 반환되지 않습니다.
+- 해당 테스트 결과값은 2 번 유저가 1 번 유저의 플래너 리스트를 방문했을 때 반환되는 리스트 입니다.
+  - 1 번 유저가 본인의 플래너 리스트를 방문한 경우 반환되는 리스트의 사이즈는 3 입니다. (위를 참고해 주세요.)
+include::{snippets}/getAllPlanners/response-fields.adoc[]
+include::{snippets}/getAllPlannersOfOtherUser/http-response.adoc[]
+
+=== 2. 플래너 정보 반환
+
+Parameters::
+
+[cols=4*,options=header]
+|===
+|path variable
+|설명
+|path variable
+|설명
+
+|userId
+|유저 인덱스
+|plannerId
+|플래너 인덱스
+|===
+
+Request::
+include::{snippets}/getPlannerInfo/http-request.adoc[]
+
+Response::
+include::{snippets}/getPlannerInfo/response-fields.adoc[]
+include::{snippets}/getPlannerInfo/http-response.adoc[]
+
+=== 3. 플래너 생성
+Parameters::
+
+[cols=2*,options=header]
+|===
+|path variable
+|설명
+
+|userId
+|유저 인덱스
+|===
+
+NOTE: _플래너 제목은 2 자에서 20 자로 제한 됩니다._
+
+Request::
+include::{snippets}/createPlanner/request-fields.adoc[]
+include::{snippets}/createPlanner/http-request.adoc[]
+
+Response::
+include::{snippets}/createPlanner/http-response.adoc[]
+
+=== 4. 플래너 수정
+Parameters::
+
+[cols=4*,options=header]
+|===
+|path variable
+|설명
+|path variable
+|설명
+
+|userId
+|유저 인덱스
+|plannerId
+|플래너 인덱스
+|===
+
+Request::
+- 플래너는 제목과 공개 여부만 수정이 가능 합니다.
+- 공개 여부만 수정하고 싶은 경우 제목에 `null` 을 넣어 주세요.
+- 공개 여부를 변경 하지 않을 경우, 현재 공개 여부를 그대로 넣어 보내주세요.
+include::{snippets}/createPlanner/request-fields.adoc[]
+include::{snippets}/updatePlanner/http-request.adoc[]
+
+Response::
+include::{snippets}/updatePlanner/http-response.adoc[]
+
+=== 5. 플래너 삭제
+NOTE: _그룹 멤버에 속해있는 유저 중 아무나 플래너를 삭제해도 다른 유저의 플래너 리스트에는 영향을 주지 않습니다._ +
+_만약 1 번과 2 번이 그룹인데, 1 번 유저가 플래너를 삭제했다고 하더라도 유저 2 번의 플래너 리스트에는 플래너가 남아 있습니다._
+
+
+Parameters::
+
+[cols=4*,options=header]
+|===
+|path variable
+|설명
+|path variable
+|설명
+
+|userId
+|유저 인덱스
+|plannerId
+|플래너 인덱스
+|===
+
+Request::
+include::{snippets}/deletePlanner/request-fields.adoc[]
+
+include::{snippets}/deletePlanner/http-request.adoc[]
+
+Response::
+include::{snippets}/deletePlanner/http-response.adoc[]
+
+== 플랜 박스
+---
+
+=== 1. 플랜 박스 생성
+Request::
+Parameters::
+
+[cols=2*,options=header]
+|===
+|path variable
+|설명
+
+|plannerId
+|플래너 인덱스
+|===
+
+PUBLISH::
+```
+/pub/planner/{plannerId}/create
+```
+
+Request Body 에 아래와 같이 넣어줍니다.
+```json
+{
+  "planDate": "1996-11-20",
+  "isPrivate": false
+}
+```
+
+SUBSCRIBE::
+```
+/sub/planner/{plannerId}
+```
+발행 주소에 제대로 값을 보내면 구독 주소에서 보낸 내용을 그대로 반환합니다. +
+실시간으로 많은 데이터가 섞여 들어오니, `type` 을 기준으로 분류해주세요.
+```json
+[
+  {
+    "type": "create-planBox",
+    "message":
+      [ {
+        "planBoxId" : 4,
+        "planDate" : "2024-06-07",
+        "planResponses" : [ {
+          "planId" : 4,
+          "isPrivate" : false,
+          "title" : "제목",
+          "time" : "19:14:50.713",
+          "content" : "내용",
+          "address" : "주소"
+        } ]
+      } ]
+  }
+]
+```
+
+=== 2. 플랜 박스 수정
+Request::
+Parameters::
+
+[cols=2*,options=header]
+|===
+|path variable
+|설명
+
+|plannerId
+|플래너 인덱스
+
+|planBoxId
+|플랜박스 인덱스
+|===
+
+PUBLISH::
+```
+/pub/planner/{plannerId}/update/{planBoxId}
+```
+
+Request Body 에 아래와 같이 넣어줍니다.
+```json
+{
+  "planDate": "1996-11-20",
+  "isPrivate": true
+}
+```
+
+SUBSCRIBE::
+```
+/sub/planner/{plannerId}
+```
+발행 주소에 제대로 값을 보내면 구독 주소에서 보낸 내용을 그대로 반환합니다. +
+실시간으로 많은 데이터가 섞여 들어오니, `type` 을 기준으로 분류해주세요.
+```json
+[
+  {
+    "type": "update-planBox",
+    "message":
+      [ {
+        "planBoxId" : 4,
+        "planDate" : "2024-06-07",
+        "planResponses" : [ {
+          "planId" : 4,
+          "isPrivate" : false,
+          "title" : "제목",
+          "time" : "19:14:50.713",
+          "content" : "내용",
+          "address" : "주소"
+        } ]
+      } ]
+  }
+]
+```
+
+=== 3. 플랜 박스 삭제
+Request::
+Parameters::
+
+[cols=2*,options=header]
+|===
+|path variable
+|설명
+
+|plannerId
+|플래너 인덱스
+
+|planBoxId
+|플랜박스 인덱스
+|===
+
+PUBLISH::
+```
+/pub/planner/{plannerId}/delete/{planBoxId}
+```
+
+SUBSCRIBE::
+```
+/sub/planner/{plannerId}
+```
+발행 주소에 제대로 값을 보내면 구독 주소에서 보낸 내용을 그대로 반환합니다. +
+실시간으로 많은 데이터가 섞여 들어오니, `type` 을 기준으로 분류해주세요.
+```json
+[
+  {
+    "type": "delete-planBox",
+    "message":
+      [ {
+        "planBoxId" : 4,
+        "planDate" : "2024-06-07",
+        "planResponses" : [ {
+          "planId" : 4,
+          "isPrivate" : false,
+          "title" : "제목",
+          "time" : "19:14:50.713",
+          "content" : "내용",
+          "address" : "주소"
+        } ]
+      } ]
+  }
+]
+```
+
+== 플랜
+---
+
+=== 1. 플랜 생성
+Request::
+Parameters::
+
+[cols=2*,options=header]
+|===
+|path variable
+|설명
+
+|plannerId
+|플래너 인덱스
+
+|planBoxId
+|플랜박스 인덱스
+|===
+
+
+PUBLISH::
+```
+/pub/planner/{plannerId}/planBox/{planBoxId}/create
+```
+
+Request Body 에 아래와 같이 넣어줍니다.
+```json
+{
+    "isPrivate": false,
+    "title": "plan 제목",
+    "time": "10:20",
+    "content": "plan 내용",
+    "address": "plan 주소"
+}
+```
+
+SUBSCRIBE::
+```
+/sub/planner/{plannerId}
+```
+발행 주소에 제대로 값을 보내면 구독 주소에서 보낸 내용을 그대로 반환합니다. +
+실시간으로 많은 데이터가 섞여 들어오니, `type` 을 기준으로 분류해주세요.
+```json
+[
+  {
+    "type": "create-plan",
+    "message":
+      [ {
+        "planBoxId" : 4,
+        "planDate" : "2024-06-07",
+        "planResponses" : [ {
+          "planId" : 4,
+          "isPrivate" : false,
+          "title" : "제목",
+          "time" : "19:14:50.713",
+          "content" : "내용",
+          "address" : "주소"
+        } ]
+      } ]
+  }
+]
+```
+
+=== 2. 플랜 수정
+Request::
+Parameters::
+
+[cols=2*,options=header]
+|===
+|path variable
+|설명
+
+|plannerId
+|플래너 인덱스
+
+|planBoxId
+|플랜박스 인덱스
+|===
+
+PUBLISH::
+```
+/pub/planner/{plannerId}/planBox/{planBoxId}/update/{planId}
+```
+
+Request Body 에 아래와 같이 넣어줍니다. +
+
+- 이때 바꾸고 싶은 값만 넣어 줍니다.
+- boolean 의 경우 값을 변경 하지 않아도 원래의 값을 넣어 주세요.
+
+```json
+{
+    "planId": 1,
+    "isPrivate": false,
+    "title": null,
+    "time": "12:20",
+    "content": null,
+    "address": null
+}
+```
+
+SUBSCRIBE::
+```
+/sub/planner/{plannerId}
+```
+발행 주소에 제대로 값을 보내면 구독 주소에서 보낸 내용을 그대로 반환합니다. +
+실시간으로 많은 데이터가 섞여 들어오니, `type` 을 기준으로 분류해주세요.
+```json
+[
+  {
+    "type": "update-plan",
+    "message":
+      [ {
+        "planBoxId" : 4,
+        "planDate" : "2024-06-07",
+        "planResponses" : [ {
+          "planId" : 4,
+          "isPrivate" : false,
+          "title" : "제목",
+          "time" : "19:14:50.713",
+          "content" : "내용",
+          "address" : "주소"
+        } ]
+      } ]
+  }
+]
+```
+
+=== 3. 플랜 삭제
+Request::
+Parameters::
+
+[cols=2*,options=header]
+|===
+|path variable
+|설명
+
+|plannerId
+|플래너 인덱스
+
+|planBoxId
+|플랜박스 인덱스
+
+|planId
+|플랜 인덱스
+|===
+
+PUBLISH::
+```
+/pub/planner/{plannerId}/planBox/{planBoxId}/delete/{planId}
+```
+
+SUBSCRIBE::
+```
+/sub/planner/{plannerId}
+```
+발행 주소에 제대로 값을 보내면 구독 주소에서 보낸 내용을 그대로 반환합니다. +
+실시간으로 많은 데이터가 섞여 들어오니, `type` 을 기준으로 분류해주세요.
+```json
+[
+  {
+    "type": "delete-plan",
+    "message":
+      [ {
+        "planBoxId" : 4,
+        "planDate" : "2024-06-07",
+        "planResponses" : [ {
+          "planId" : 4,
+          "isPrivate" : false,
+          "title" : "제목",
+          "time" : "19:14:50.713",
+          "content" : "내용",
+          "address" : "주소"
+        } ]
+      } ]
+  }
+]
+```
