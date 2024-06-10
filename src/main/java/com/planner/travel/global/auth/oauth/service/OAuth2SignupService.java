@@ -56,7 +56,7 @@ public class OAuth2SignupService {
                 .profile(profile)
                 .signupDate(LocalDateTime.now())
                 .isWithdrawal(false)
-                .userTag(randomNumberUtil.set())
+                .userTag(randomNumberUtil.setUserCode())
                 .sex(Sex.NONE)
                 .build();
 

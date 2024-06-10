@@ -3,11 +3,13 @@ package com.planner.travel.user;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.planner.travel.global.auth.basic.controller.BasicAuthController;
-import com.planner.travel.global.auth.basic.dto.response.SignupRequest;
+import com.planner.travel.global.auth.basic.dto.request.SignupRequest;
 import com.planner.travel.global.auth.basic.service.LoginService;
 import com.planner.travel.global.auth.basic.service.SignupService;
 import com.planner.travel.global.ApiDocumentUtil;
 import com.planner.travel.global.util.CookieUtil;
+import com.planner.travel.global.util.RedisUtil;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,13 +41,17 @@ public class SignupControllerTest {
 
     @MockBean
     private SignupService signupService;
+
     @MockBean
     private LoginService loginService;
+
     @MockBean
     private CookieUtil cookieUtil;
 
-    private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+    @MockBean
+    private RedisUtil redisUtil;
 
+    private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
     @DisplayName("회원 가입")
     @Test
@@ -54,6 +60,7 @@ public class SignupControllerTest {
                 "wldsmtldsm65@gmail.com",
                 "123qwe!@#QWE",
                 "시니",
+                "123456",
                 LocalDate.parse("1996-11-20")
         );
 
@@ -90,6 +97,7 @@ public class SignupControllerTest {
                 "invalid-email",
                 "123qwe!@#QWE",
                 "시니",
+                "123456",
                 LocalDate.parse("1996-11-20")
         );
 
@@ -127,6 +135,7 @@ public class SignupControllerTest {
                 "wldsmtldsm65@gmail.com",
                 "123qwe!@#QWE",
                 "시니",
+                "123456",
                 LocalDate.parse("1996-11-20")
         );
 
@@ -164,6 +173,7 @@ public class SignupControllerTest {
                 "wldsmtldsm65@gmail.com",
                 "123qwe!@#QWE",
                 "[시니]", // 특수 문자 사용
+                "123456",
                 LocalDate.parse("1996-11-20")
         );
 
@@ -202,6 +212,7 @@ public class SignupControllerTest {
                 "wldsmtldsm65@gmail.com",
                 "aA12!@#aa아a",
                 "시니",
+                "123456",
                 LocalDate.parse("1996-11-20")
         );
 
