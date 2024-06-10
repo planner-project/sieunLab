@@ -1,0 +1,47 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+== 일반 로그인
+---
+=== 1. 요청과 응답
+Request::
+include::{snippets}/login/http-request.adoc[]
+include::{snippets}/login/request-fields.adoc[]
+
+Response::
+include::{snippets}/login/http-response.adoc[]
+- Authorization, Set-cookie 헤더가 제대로 반환 되어야 합니다.
+- Authorization 헤더 에는 `AccessToken` 이 들어있으며, 로그인 이후 요청에 항상 넣어 주어야 합니다.
+- Cookie 에는 `RefreshToken` 이 들어있습니다.
+
+=== 2. 존재 하지 않는 이메일로 로그인 요청
+include::{snippets}/login-notexistent-email/http-response.adoc[]
+
+=== 3. 로그인 시 이메일은 맞지만 비밀번호가 틀린 경우
+include::{snippets}/login-wrong-password/http-response.adoc[]
+
+== 소셜 로그인
+---
+=== 1. 구글 로그인
+==== 1.1 요청과 응답
+구글 로그인 버튼에 아래 주소를 링크로 걸어 주세요.
+```http
+GET /api/v1/oauth/authorize/google HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+Content-Length: 71
+Host: localhost:8080
+```
+
+구글 로그인이 완료 되면, 아래와 같이 유저 정보가 반환 됩니다. (_%s 는 실제 값으로 대체됩니다._)
+``` http
+GET /oauth/callback?userId=%s&nickname=%s&userTag=%s&profileImgUrl=%s HTTP/1.1
+Authorization: Bearer valid_access_token
+Host: localhost:5173
+```
+구글에서 인증이 된 유저의 정보를 처리하여 아래 주소로 리다이렉트 하는 것이기 때문에 기본적으로 응답 바디가 없습니다. +
+때문에 프론트에서는 `/oauth/callback` 주소에 포함된 쿼리 매개변수를 처리하여 유저 정보를 저장해주세요. +
+그리고 로그인이 된 것이기 때문에 기본 로그인 처럼 메인 화면으로 이동시켜주면 됩니디. +

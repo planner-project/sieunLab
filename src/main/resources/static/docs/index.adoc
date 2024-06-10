@@ -1,0 +1,258 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 3
+:sectlinks:
+
+= Travel Planner API
+
+.About Docs
+- ver. 0.0.0
+- Last update 24.06.07
+
+== 공통 기능 (Common)
+---
+=== 1. 토큰
+IMPORTANT: _토큰의 종류는 아래와 같으며, *로그인* 시 받게 됩니다. +
+로그인 이후의 모든 요청 에는 전부 Authorization 헤더가 존재 해야 하며, 안에 accessToken 이 존재 해야 합니다._
+
+==== 1.1. Token Table
+[cols=3*,options=header]
+|===
+|토큰
+|위치
+|유효 기간
+
+|access token
+|Authorization header
+|15 분
+
+|refresh token
+|Cookie
+|15 분
+
+|===
+
+==== 1.2. 토큰 재발행
+WARNING: _요청 시 예외가 발생 하고, 예외 코드가 `TOKEN_01` 인 경우 토큰을 재발급 받아야 합니다._ +
+_응답 으로 받은 토큰 으로 요청을 다시 보내주세요._
+
+Request::
+```HTTP
+POST /api/v1/auth/token/refresh
+Content-Type: application/json;charset=UTF-8
+Content-Length: 71
+Host: localhost:8080
+```
+
+Response::
+include::{snippets}/login/http-response.adoc[]
+
+
+
+=== 2. 예외 코드
+NOTE: _응답시 예외에 대한 내용을 상세 하게 적어서 보낼 시, 일반 유저 들도 손쉽게 볼 수 있습니다. +
+따라서 이를 숨기기 위해 아래와 같이 테이블을 작성하였습니다. 참고 하여 예외 처리를 해주세요._
+
+[cols=4*,options=header]
+|===
+|예외 코드
+|예외 설명
+|예외 코드
+|예외 설명
+
+|AUTH_01 (404)
+|존재 하지 않는 이메일로 로그인 시도
+|AUTH_02 (400)
+|비밀번호가 불일치 한 경우 발생
+
+|AUTH_03 (401)
+|인증 과정 에서 오류가 발생한 경우 발생
+|TOKEN_01 (401)
+|토큰이 만료된 경우 발생
+
+|INVALID_VALUE_01 (404)
+|요청 값을 찾을 수 없는 경우 발생
+|INVALID_VALUE_02 (400)
+|알맞지 않은 값을 요청 값으로 넣은 경우 발생
+
+|INVALID_VALUE_03 (400)
+|요청 값이 validation 결과 알맞지 않은 경우 발생
+|INVALID_VALUE_04 (400)
+|요청 값이 이미 존재 하는 경우 발생
+
+|===
+
+=== 3. 웹소켓
+HandShake::
+`Authorization` 헤더에 accessToken 을 넣어주어야 합니다.
+
+CONNECT::
+이 단계 에서는 아무 것도 하지 않아도 됩니다.
+
+SUBSCRIBE::
+구독 주소를 명확 하게 작성 해야 합니다. 자세한건 각각의 명세에서 확인해주세요.
+
+MESSAGE::
+- 발행 주소를 명확 하게 작성 해야 합니다. 자세한건 각각의 명세에서 확인해주세요.
+- `Authorization` 헤더에 accessToken 을 넣어주어야 합니다.
+
+
+== 검색 기능 (Search)
+---
+=== 1. 유저 검색
+Parameters::
+
+[cols=2*,options=header]
+|===
+|Request parameter
+|설명
+
+|email
+|이메일
+|===
+
+Request::
+```http
+GET /api/v1/users?email=wldsmtldsm65@gmail.com HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3IiwiaWF0IjoxNzE2MjExNzE3LCJleHAiOjE3MTYyMTI2MTd9.WW7oSRd1h1s-qPSnOiUdlMGc6C2hrDGBANaEEOBrZBM
+Host: localhost:8080
+```
+
+
+Response::
+``` http
+HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 87
+
+{
+"userId" : 1,
+"nickname" : "시은",
+"userTag" : 1234,
+"profileImageUrl" : ""
+}
+```
+
+
+== 유저 기능 (User)
+---
+=== link:user/signup.html[1. 회원 가입]
+
+=== link:user/login.html[2. 로그인]
+- 일반 로그인
+- 소셜 로그인
+
+=== 3. 로그아웃
+Request::
+_로그아웃 시 이전에 담겨 있던 토큰과 쿠키가 삭제 됩니다._
+```HTTP
+POST /api/v1/auth/logout
+Content-Type: application/json;charset=UTF-8
+Content-Length: 71
+Host: localhost:8080
+```
+
+=== 4. 유저 정보 반환
+Request::
+include::{snippets}/userInfo/http-request.adoc[]
+
+Response::
+_유저 태그는 `시은(#1234)` 와 같이 사용해주세요._
+include::{snippets}/userInfo/response-fields.adoc[]
+include::{snippets}/userInfo/http-response.adoc[]
+
+== 유저 정보 기능 (Profile)
+---
+=== link:profile/updateInfo.html[1. 유저 정보 수정]
+- 프로필 이미지 변경
+- 유저 닉네임 변경
+- 비밀번호 변경
+- 생일 변경
+
+=== 2. 회원 탈퇴
+NOTE: _헤더에 토큰을 넣어서 보내 주기만 하면 됩니다. 유저 검증은 백단 에서 합니다._ +
+_대신 `200` 상태 코드가 반환 되는 경우 바로 *로그아웃 -> 메인화면* 이동 으로 동작 되게 해주세요._
+
+include::{snippets}/userWithdrawal/http-request.adoc[]
+include::{snippets}/userWithdrawal/http-response.adoc[]
+
+== 플래너 기능 (Planner)
+---
+NOTE: _기울인 글꼴로 작성된 기능은 **웹소켓** 을 사용하는 기능 입니다._
+
+=== link:planner/planner.html[1. 플래너 기능]
+- 플래너 CRUD
+- _플랜박스 CRUD_
+- _플랜 CRUD_
+
+=== link:planner/group.html[2. 그룹 기능]
+- 그룹 멤버 검색
+- 그룹 멤버 추가
+- 그룹 멤버 삭제
+
+=== 3. _실시간 채팅_
+NOTE: _실시간 채팅의 경우 계획을 짤 때 가볍게 사용하는 기능입니다._ +
+_때문에 이전 대화 기록을 불러오기를 위한 대화 저장 기능이 없습니다._ +
+_보안 이슈 또한 고려해서 내린 결정입니다. 참고해주세요!_
+
+Request::
+Parameters::
+
+[cols=2*,options=header]
+|===
+|path variable
+|설명
+
+|plannerId
+|플래너 인덱스
+|===
+
+PUBLISH::
+```
+/pub/planner/{plannerId}/chat/send
+```
+Request Body 에 아래와 같이 넣어줍니다.
+```json
+{
+  "userId": 4,
+  "nickname": "시은",
+  "profileImgUrl": "",
+  "message": "안녀엉"
+}
+```
+
+SUBSCRIBE::
+```
+/sub/planner/{plannerId}
+```
+
+발행 주소에 제대로 값을 보내면 구독 주소에서 보낸 내용을 그대로 반환합니다. +
+실시간으로 많은 데이터가 섞여 들어오니, `type` 을 기준으로 분류해주세요.
+
+```json
+[
+  {
+    "type": "chat",
+    "message":
+      {
+        "userId": 4,
+        "nickname": "시은",
+        "profileImgUrl": "",
+        "message": "안녀엉"
+      }
+  }
+]
+```
+

@@ -1,0 +1,126 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 3
+:sectlinks:
+
+== 유저 정보 수정
+---
+=== 1. 프로필 이미지 변경
+NOTE: _맨 처음 회원 가입을 하면 profileImageUrl 은 `""` 로 설정 됩니다._
+
+Parameters::
+
+[cols=5*,options=header]
+|===
+|path variable
+|설명
+|request parameter
+|설명
+|required
+
+|userId
+|유저 인덱스
+|profileImage
+|프로필 이미지
+|false
+|===
+
+==== 1.2. 이미지 파일을 넣은 경우
+WARNING: `Content-Type` _을 주의해 주세요. 이미지 파일이 있는 경우와 없는 경우가 다릅니다._
+
+Request::
+include::{snippets}/updateProfileImage/http-request.adoc[]
+
+Response::
+include::{snippets}/updateProfileImage/http-response.adoc[]
+
+==== 1.3. 이미지 파일을 넣지 않은 경우
+Request::
+include::{snippets}/updateProfileImageToBasic/http-request.adoc[]
+
+Response::
+include::{snippets}/updateProfileImageToBasic/http-response.adoc[]
+
+WARNING: _**아래 부터는 유저 성별을 변경 하지 않더 라도 현재 유저 성별을 꼭 넣어서 보내주세요.**_
+
+=== 2. 유저 비밀번호 변경
+Parameter::
+[cols=2*,options=header]
+|===
+|path variable
+|설명
+
+|userId
+|유저 인덱스
+|===
+
+Request::
+include::{snippets}/updatePassword/request-fields.adoc[]
+include::{snippets}/updatePassword/http-request.adoc[]
+
+Response::
+include::{snippets}/updatePassword/http-response.adoc[]
+
+=== 3. 유저 닉네임 변경
+Parameter::
+[cols=2*,options=header]
+|===
+|path variable
+|설명
+
+|userId
+|유저 인덱스
+|===
+
+Request::
+include::{snippets}/updateNinkname/request-fields.adoc[]
+include::{snippets}/updateNinkname/http-request.adoc[]
+
+Response::
+include::{snippets}/updateNinkname/http-response.adoc[]
+
+=== 4. 유저 생년월일 변경
+Parameter::
+[cols=2*,options=header]
+|===
+|path variable
+|설명
+
+|userId
+|유저 인덱스
+|===
+
+Request::
+include::{snippets}/updateBirthday/request-fields.adoc[]
+include::{snippets}/updateBirthday/http-request.adoc[]
+
+Response::
+include::{snippets}/updateBirthday/http-response.adoc[]
+
+=== 5. 유저 성별 수정
+NOTE: `String` 의 형태로 "WOMAN", "NONE", "MAN" 셋 중 하나를 넣어 주세요.
+
+Parameter::
+[cols=2*,options=header]
+|===
+|path variable
+|설명
+
+|userId
+|유저 인덱스
+|===
+
+Request::
+include::{snippets}/updateSex/request-fields.adoc[]
+include::{snippets}/updateSex/http-request.adoc[]
+
+Response::
+include::{snippets}/updateSex/http-response.adoc[]
+
+=== 6. 예외 처리
+
+WARNING: _유효하지 않은 `닉네임` 과 `비밀번호` 로 요청할 시 아래와 같은 예외를 반환합니다._
+
+include::{snippets}/signup-invalid-password/http-response.adoc[]
