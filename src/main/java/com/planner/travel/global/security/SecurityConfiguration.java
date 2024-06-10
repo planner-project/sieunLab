@@ -45,7 +45,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests((authorizeRequest) ->
                         authorizeRequest
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                                .requestMatchers("/api/v1/auth/signup").permitAll()
+                                .requestMatchers("/api/v1/auth/signup/**").permitAll()
                                 .requestMatchers("/api/v1/auth/login").permitAll()
                                 .requestMatchers("/oauth/**").permitAll()
                                 .requestMatchers("/api/v1/oauth/**").permitAll()

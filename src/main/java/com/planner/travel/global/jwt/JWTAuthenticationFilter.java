@@ -27,7 +27,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
         String requestURI = request.getRequestURI();
 
-        if (requestURI.equals("/api/v1/auth/signup") ||
+        if (requestURI.startsWith("/api/v1/auth/signup") ||
                 requestURI.equals("/api/v1/auth/login") ||
                 requestURI.equals("/api/v1/auth/logout") ||
                 requestURI.startsWith("/api/v1/auth/token") ||
