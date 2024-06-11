@@ -1,5 +1,6 @@
 package com.planner.travel.global.auth.basic.controller;
 
+import com.planner.travel.global.auth.basic.dto.request.AuthenticationRequest;
 import com.planner.travel.global.auth.basic.dto.request.LoginRequest;
 import com.planner.travel.global.auth.basic.dto.request.SignupRequest;
 import com.planner.travel.global.auth.basic.service.LoginService;
@@ -23,6 +24,12 @@ public class BasicAuthController {
     @PostMapping(value = "/signup")
     public ResponseEntity<?> signup(@Valid @RequestBody SignupRequest signupRequest) {
         signupService.signup(signupRequest);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping(value = "/signup/authentication/check")
+    public ResponseEntity<?> authenticateUser(@RequestBody AuthenticationRequest authenticationRequest) {
+        signupService.validateTempCode(authenticationRequest);
         return ResponseEntity.ok().build();
     }
 

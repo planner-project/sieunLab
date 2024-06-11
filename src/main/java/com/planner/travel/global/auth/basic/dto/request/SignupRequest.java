@@ -17,7 +17,5 @@ public record SignupRequest(
         @Size(min = 2, max = 12)
         String nickname,
 
-        String TempCode,
-
         LocalDate birthday
 ) {}
