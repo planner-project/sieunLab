@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 
 @Slf4j
 @Component
@@ -54,22 +55,40 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         cookieUtil.setCookie("refreshToken", refreshToken, response);
         redisUtil.setData(String.valueOf(customOAuth2User.getUser().getId()), refreshToken);
 
-        String frontendRedirectUrl = setRedirectUrl(customOAuth2User);
+        String frontendRedirectUrl = setRedirectUrl(customOAuth2User, accessToken);
 
         response.sendRedirect(frontendRedirectUrl);
     }
 
-    private String setRedirectUrl (CustomOAuth2User customOAuth2User) {
+    private String setRedirectUrl (CustomOAuth2User customOAuth2User, String accessToken) {
         String encodedUserId = URLEncoder.encode(String.valueOf(customOAuth2User.getUser().getId()), StandardCharsets.UTF_8);
         String encodedNickname = URLEncoder.encode(String.valueOf(customOAuth2User.getUser().getNickname()), StandardCharsets.UTF_8);
         String encodedUserTag = URLEncoder.encode(String.valueOf(customOAuth2User.getUser().getUserTag()), StandardCharsets.UTF_8);
+        String encodedBirthDay = URLEncoder.encode(String.valueOf(customOAuth2User.getUser().getBirthday()), StandardCharsets.UTF_8);
+        String encodedEmail = URLEncoder.encode(String.valueOf(customOAuth2User.getUser().getEmail()), StandardCharsets.UTF_8);
         String encodedProfileImgUrl = URLEncoder.encode(String.valueOf(customOAuth2User.getUser().getProfile().getImage().getImageUrl()), StandardCharsets.UTF_8);
+        String encodedIsBirthDay = URLEncoder.encode(String.valueOf(isBirthdayToday(customOAuth2User.getUser().getBirthday())));
+        String encodedSex = URLEncoder.encode(String.valueOf(customOAuth2User.getUser().getSex()));
 
         String frontendRedirectUrl = String.format(
-                "%s/oauth/callback?&userId=%s&nickname=%s&userTag=%s&profileImgUrl=%s",
-                PRE_FRONT_REDIRECT_URL,encodedUserId,encodedNickname,encodedUserTag, encodedProfileImgUrl
+                "%s/oauth/callback?token=%s&userId=%s&nickname=%s&userTag=%s&profileImgUrl=%s",
+                PRE_FRONT_REDIRECT_URL,
+                accessToken,
+                encodedUserId,
+                encodedNickname,
+                encodedUserTag,
+                encodedBirthDay,
+                encodedEmail,
+                encodedProfileImgUrl,
+                encodedIsBirthDay,
+                encodedSex
         );
 
         return frontendRedirectUrl;
+    }
+
+    private boolean isBirthdayToday(LocalDate birthday) {
+        return birthday != null && birthday.getMonth() == LocalDate.now().getMonth() &&
+                birthday.getDayOfMonth() == LocalDate.now().getDayOfMonth();
     }
 }
