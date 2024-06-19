@@ -2,6 +2,7 @@ package com.planner.travel.domain.planner.entity;
 
 import com.planner.travel.domain.user.entity.User;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 @Entity
@@ -15,6 +16,7 @@ public class Planner {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Size(min = 2, max = 15)
     private String title;
 
     private String startDate;
