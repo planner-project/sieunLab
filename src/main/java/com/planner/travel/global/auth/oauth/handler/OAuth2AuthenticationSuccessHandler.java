@@ -64,20 +64,20 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         String encodedUserId = URLEncoder.encode(String.valueOf(customOAuth2User.getUser().getId()), StandardCharsets.UTF_8);
         String encodedNickname = URLEncoder.encode(String.valueOf(customOAuth2User.getUser().getNickname()), StandardCharsets.UTF_8);
         String encodedUserTag = URLEncoder.encode(String.valueOf(customOAuth2User.getUser().getUserTag()), StandardCharsets.UTF_8);
-        String encodedBirthDay = URLEncoder.encode(String.valueOf(customOAuth2User.getUser().getBirthday()), StandardCharsets.UTF_8);
+        String encodedBirthday = URLEncoder.encode(String.valueOf(customOAuth2User.getUser().getBirthday()), StandardCharsets.UTF_8);
         String encodedEmail = URLEncoder.encode(String.valueOf(customOAuth2User.getUser().getEmail()), StandardCharsets.UTF_8);
         String encodedProfileImgUrl = URLEncoder.encode(String.valueOf(customOAuth2User.getUser().getProfile().getImage().getImageUrl()), StandardCharsets.UTF_8);
         String encodedIsBirthDay = URLEncoder.encode(String.valueOf(isBirthdayToday(customOAuth2User.getUser().getBirthday())));
         String encodedSex = URLEncoder.encode(String.valueOf(customOAuth2User.getUser().getSex()));
 
         String frontendRedirectUrl = String.format(
-                "%s/oauth/callback?token=%s&userId=%s&nickname=%s&userTag=%s&profileImgUrl=%s",
+                "%s/oauth/callback?token=%s&userId=%s&nickname=%s&userTag=%s&birthday=%s&email=%s&profileImgUrl=%s&isBirthday=%s&sex=%s",
                 PRE_FRONT_REDIRECT_URL,
                 accessToken,
                 encodedUserId,
                 encodedNickname,
                 encodedUserTag,
-                encodedBirthDay,
+                encodedBirthday,
                 encodedEmail,
                 encodedProfileImgUrl,
                 encodedIsBirthDay,
