@@ -12,6 +12,9 @@ import com.planner.travel.global.util.RedisUtil;
 import com.planner.travel.global.util.image.entity.Category;
 import com.planner.travel.global.util.image.entity.Image;
 import com.planner.travel.global.util.image.repository.ImageRepository;
+import com.planner.travel.global.util.mail.dto.MailAuthenticaionMessage;
+import com.planner.travel.global.util.mail.dto.request.MailAuthenticationRequest;
+import com.planner.travel.global.util.mail.service.MailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,6 +33,7 @@ public class SignupService {
     private final PasswordEncoder passwordEncoder;
     private final RandomNumberUtil randomNumberUtil;
     private final RedisUtil redisUtil;
+    private final MailService mailService;
 
     @Transactional
     public void signup(SignupRequest request) {
@@ -74,7 +78,7 @@ public class SignupService {
         userRepository.save(user);
     }
 
-    private void validateTempCode(String email, String tempCode) {
+    public void validateTempCode(String email, String tempCode) {
         String tempCodeFromRedis = redisUtil.getData(email);
 
         if (tempCode.equals(tempCodeFromRedis)) {
