@@ -11,6 +11,8 @@ import com.planner.travel.global.jwt.token.SubjectExtractor;
 import com.planner.travel.global.jwt.token.TokenExtractor;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,14 +29,14 @@ public class PlannerController {
 
 
     @GetMapping(value = "/{userId}/planners")
-    public ResponseEntity<List<PlannerListResponse>> getPlanners(@PathVariable("userId") Long userId, HttpServletRequest request) {
+    public Page<PlannerListResponse> getPlanners(@PathVariable("userId") Long userId, HttpServletRequest request, Pageable pageable) {
         String accessToken = tokenExtractor.getAccessTokenFromHeader(request);
         Long subject = subjectExtractor.getUserIdFromToken(accessToken);
         boolean isLoginUser = subject.equals(userId);
 
-        List<PlannerListResponse> planners = plannerListService.getAllPlanners(userId, isLoginUser);
+        Page<PlannerListResponse> planners = plannerListService.getAllPlanners(userId, isLoginUser, pageable);
 
-        return ResponseEntity.ok(planners);
+        return planners;
     }
 
     @GetMapping(value = "/{userId}/planners/{plannerId}")

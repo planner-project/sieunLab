@@ -14,6 +14,8 @@ import com.planner.travel.domain.user.entity.User;
 import com.planner.travel.domain.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,17 +32,17 @@ public class PlannerListService {
     private final PlannerQueryService plannerQueryService;
 
     @Transactional(readOnly = true)
-    public List<PlannerListResponse> getAllPlanners(Long userId, boolean isLoginUser) {
-        List<PlannerListResponse> plannerListResponses = new ArrayList<>();
+    public Page<PlannerListResponse> getAllPlanners(Long userId, boolean isLoginUser, Pageable pageable) {
+        Page<PlannerListResponse> plannerListResponses;
         System.out.println("============================================================================");
         System.out.println("isLoginUser? : " + isLoginUser);
         System.out.println("============================================================================");
 
         if (isLoginUser) {
-            plannerListResponses = plannerQueryService.findMyPlannersByUserId(userId);
+            plannerListResponses = plannerQueryService.findMyPlannersByUserId(userId, pageable);
 
         } else {
-            plannerListResponses = plannerQueryService.findPlannersByUserId(userId);
+            plannerListResponses = plannerQueryService.findPlannersByUserId(userId, pageable);
         }
 
         return plannerListResponses;
