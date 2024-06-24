@@ -42,7 +42,8 @@ public class PlannerQueryService {
 
         List<GroupMember> planners = queryFactory
                 .selectFrom(qGroupMember)
-                .where(qGroupMember.planner.isPrivate.isFalse())
+                .where(qGroupMember.planner.isPrivate.isFalse()
+                        .and(qGroupMember.isHost.isTrue()))
                 .orderBy(qPlanner.id.desc())
                 .fetch();
 
@@ -81,7 +82,7 @@ public class PlannerQueryService {
     }
 
     @NotNull
-    private List<PlannerListResponse> getPlannerListResponses(List<GroupMember> planners) {
+    public List<PlannerListResponse> getPlannerListResponses(List<GroupMember> planners) {
         return planners.stream()
                 .map(planner -> {
                     String startDate = planner.getPlanner().getStartDate();
