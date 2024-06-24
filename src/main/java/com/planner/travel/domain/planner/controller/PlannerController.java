@@ -1,7 +1,6 @@
 package com.planner.travel.domain.planner.controller;
 
 import com.planner.travel.domain.planner.dto.request.PlannerCreateRequest;
-import com.planner.travel.domain.planner.dto.request.PlannerDeleteRequest;
 import com.planner.travel.domain.planner.dto.request.PlannerUpdateRequest;
 import com.planner.travel.domain.planner.dto.response.PlannerListResponse;
 import com.planner.travel.domain.planner.dto.response.PlannerResponse;
@@ -15,8 +14,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -58,8 +55,8 @@ public class PlannerController {
     }
 
     @DeleteMapping(value = "/{userId}/planners/{plannerId}")
-    public ResponseEntity<?> deletePlanner(@PathVariable("userId") Long userId, @PathVariable("plannerId") Long plannerId, @RequestBody PlannerDeleteRequest request) {
-        plannerListService.delete(request, plannerId);
+    public ResponseEntity<?> deletePlanner(@PathVariable("userId") Long userId, @PathVariable("plannerId") Long plannerId) {
+        plannerListService.delete(userId, plannerId);
         return ResponseEntity.ok().build();
     }
 }

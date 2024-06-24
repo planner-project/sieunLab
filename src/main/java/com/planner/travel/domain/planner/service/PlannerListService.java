@@ -4,7 +4,6 @@ import com.planner.travel.domain.group.entity.GroupMember;
 import com.planner.travel.domain.group.query.GroupMemberQueryService;
 import com.planner.travel.domain.group.repository.GroupMemberRepository;
 import com.planner.travel.domain.planner.dto.request.PlannerCreateRequest;
-import com.planner.travel.domain.planner.dto.request.PlannerDeleteRequest;
 import com.planner.travel.domain.planner.dto.request.PlannerUpdateRequest;
 import com.planner.travel.domain.planner.dto.response.PlannerListResponse;
 import com.planner.travel.domain.planner.entity.Planner;
@@ -18,9 +17,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -54,6 +50,7 @@ public class PlannerListService {
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
         Planner planner = Planner.builder()
+                .user(user)
                 .title(request.title())
                 .startDate("")
                 .endDate("")
@@ -86,8 +83,8 @@ public class PlannerListService {
     }
 
     @Transactional
-    public void delete(PlannerDeleteRequest request, Long plannerId) {
-        GroupMember groupMember = groupMemberQueryService.findGroupMember(request.userId(), plannerId);
+    public void delete(Long userId, Long plannerId) {
+        GroupMember groupMember = groupMemberQueryService.findGroupMember(userId, plannerId);
 
         groupMember.updateIsLeaved(true);
         groupMemberRepository.save(groupMember);
