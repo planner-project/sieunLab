@@ -8,6 +8,7 @@ import com.planner.travel.domain.user.entity.User;
 import com.planner.travel.domain.user.repository.UserRepository;
 import com.planner.travel.global.auth.oauth.entity.OAuth2UserInfo;
 import com.planner.travel.global.util.RandomNumberUtil;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,12 +21,11 @@ public class OAuth2SignupService {
     private final ProfileRepository profileRepository;
     private final RandomNumberUtil randomNumberUtil;
 
+    @Transactional
     public User signup(String provider, OAuth2UserInfo oAuth2UserInfo) {
         Profile profile = Profile.builder()
                 .profileImageUrl(oAuth2UserInfo.getProfile())
                 .build();
-
-        profileRepository.save(profile);
 
         User user = User.builder()
                 .provider(provider)
@@ -39,6 +39,7 @@ public class OAuth2SignupService {
                 .sex(Sex.NONE)
                 .build();
 
+        profileRepository.save(profile);
         userRepository.save(user);
 
         return user;
