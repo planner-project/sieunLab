@@ -73,7 +73,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         String frontendRedirectUrl = String.format(
                 "%s/oauth/callback?token=%s&userId=%s&nickname=%s&userTag=%s&birthday=%s&email=%s&profileImgUrl=%s&isBirthday=%s&sex=%s",
                 PRE_FRONT_REDIRECT_URL,
-                accessToken,
+                "Bearer " + accessToken,
                 encodedUserId,
                 encodedNickname,
                 encodedUserTag,
