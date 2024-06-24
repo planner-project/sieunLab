@@ -31,6 +31,7 @@ public class ProfileController {
     public void updateProfileImage(
             @PathVariable("userId") Long userId,
             @RequestParam(value = "profileImage", required = false) MultipartFile multipartFile) throws Exception {
+
         if (multipartFile != null && !multipartFile.isEmpty()) {
             profileImageService.update(userId, multipartFile);
 
