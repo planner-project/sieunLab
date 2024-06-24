@@ -27,12 +27,12 @@ public class SearchController {
     }
 
     @GetMapping(value = "/planners")
-    public Page<PlannerListResponse> findPlanners(String input, Pageable pageable) {
+    public Page<PlannerListResponse> findPlanners(@RequestParam("query") String input, Pageable pageable) {
         return plannerSearchService.searchUnPrivatePlanners(input, pageable);
     }
 
     @GetMapping(value = "/planners/{userId}")
-    public Page<PlannerListResponse> findMyPlanners(@PathVariable("userId") Long userId, String input, Pageable pageable) {
+    public Page<PlannerListResponse> findMyPlanners(@PathVariable("userId") Long userId, @RequestParam("query") String input, Pageable pageable) {
         return plannerSearchService.searchMyPlanners(userId, input, pageable);
     }
 }
