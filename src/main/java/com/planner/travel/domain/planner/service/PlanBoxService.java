@@ -28,8 +28,8 @@ public class PlanBoxService {
     private final PlanBoxQueryService planBoxQueryService;
 
     @Transactional(readOnly = true)
-    public List<PlanBoxResponse> getAllPlanBox(Long plannerId) {
-        List<PlanBoxResponse> planBoxResponses = planBoxQueryService.findPlanBoxesByPlannerId(plannerId);
+    public List<PlanBoxResponse> getAllPlanBox(Long plannerId, String status) {
+        List<PlanBoxResponse> planBoxResponses = planBoxQueryService.findPlanBoxesByPlannerId(plannerId, status);
 
         return planBoxResponses;
     }
@@ -68,7 +68,7 @@ public class PlanBoxService {
         planner.updateStartDate(plannerQueryService.getStartDate(plannerId));
         planner.updateEndDate(plannerQueryService.getEndDate(plannerId));
 
-        return planBoxQueryService.findPlanBoxesByPlannerId(planBoxId);
+        return planBoxQueryService.findPlanBoxesByPlannerId(planBoxId, "my");
     }
 
     @Transactional
@@ -85,6 +85,6 @@ public class PlanBoxService {
         planner.updateStartDate(plannerQueryService.getStartDate(plannerId));
         planner.updateEndDate(plannerQueryService.getEndDate(plannerId));
 
-        return planBoxQueryService.findPlanBoxesByPlannerId(planBoxId);
+        return planBoxQueryService.findPlanBoxesByPlannerId(planBoxId, "my");
     }
 }

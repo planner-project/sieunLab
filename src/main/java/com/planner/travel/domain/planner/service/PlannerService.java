@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 public class PlannerService {
     private final PlannerQueryService plannerQueryService;
 
-    public PlannerResponse getPlanner(Long plannerId) {
-        PlannerResponse plannerResponse = plannerQueryService.findPlannerById(plannerId);
+    public PlannerResponse getPlanner(Long plannerId, String status) {
+        PlannerResponse plannerResponse = plannerQueryService.findPlannerById(plannerId, status);
         return plannerResponse;
     }
 }

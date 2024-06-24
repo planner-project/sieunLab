@@ -4,57 +4,69 @@ import com.planner.travel.domain.planner.dto.request.PlannerCreateRequest;
 import com.planner.travel.domain.planner.dto.request.PlannerUpdateRequest;
 import com.planner.travel.domain.planner.dto.response.PlannerListResponse;
 import com.planner.travel.domain.planner.dto.response.PlannerResponse;
+import com.planner.travel.domain.planner.query.PlannerQueryService;
 import com.planner.travel.domain.planner.service.PlannerListService;
 import com.planner.travel.domain.planner.service.PlannerService;
 import com.planner.travel.global.jwt.token.SubjectExtractor;
 import com.planner.travel.global.jwt.token.TokenExtractor;
+import com.planner.travel.global.security.CustomUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/api/v1/users")
+@RequestMapping(value = "/api/v1")
 public class PlannerController {
+    private final PlannerQueryService plannerQueryService;
     private final PlannerListService plannerListService;
     private final PlannerService plannerService;
     private final TokenExtractor tokenExtractor;
     private final SubjectExtractor subjectExtractor;
 
+    @GetMapping(value = "/planners")
+    public Page<PlannerListResponse> getAllPlanners(Pageable pageable) {
+        return plannerQueryService.findUnPrivatePlanners(pageable);
+    }
 
-    @GetMapping(value = "/{userId}/planners")
-    public Page<PlannerListResponse> getPlanners(@PathVariable("userId") Long userId, HttpServletRequest request, Pageable pageable) {
-        String accessToken = tokenExtractor.getAccessTokenFromHeader(request);
-        Long subject = subjectExtractor.getUserIdFromToken(accessToken);
-        boolean isLoginUser = subject.equals(userId);
-
-        Page<PlannerListResponse> planners = plannerListService.getAllPlanners(userId, isLoginUser, pageable);
-
+    @GetMapping(value = "/users/{userId}/planners")
+    public Page<PlannerListResponse> getPlanners(@PathVariable("userId") Long userId, Pageable pageable, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Page<PlannerListResponse> planners = plannerListService.getAllPlanners(userId, pageable, userDetails);
         return planners;
     }
 
-    @GetMapping(value = "/{userId}/planners/{plannerId}")
+    @GetMapping(value = "/users/{userId}/planners/{plannerId}")
     public ResponseEntity<PlannerResponse> getPlanner(@PathVariable("userId") Long userId, @PathVariable("plannerId") Long plannerId) {
-        PlannerResponse planner = plannerService.getPlanner(plannerId);
+        PlannerResponse planner = plannerService.getPlanner(plannerId, "my");
         return ResponseEntity.ok(planner);
     }
 
-    @PostMapping(value = "/{userId}/planners")
+    @GetMapping(value = "/planners/{plannerId}")
+    public ResponseEntity<PlannerResponse> getOtherPlanner(@PathVariable("plannerId") Long plannerId) {
+        PlannerResponse planner = plannerService.getPlanner(plannerId, "other");
+        return ResponseEntity.ok(planner);
+    }
+
+    @PostMapping(value = "/users/{userId}/planners")
     public ResponseEntity<?> createPlanner(@PathVariable("userId") Long userId, @RequestBody PlannerCreateRequest request) {
         plannerListService.create(request, userId);
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping(value = "/{userId}/planners/{plannerId}")
+    @PatchMapping(value = "/users/{userId}/planners/{plannerId}")
     public ResponseEntity<?> updatePlanner(@PathVariable("userId") Long userId, @PathVariable("plannerId") Long plannerId, @RequestBody PlannerUpdateRequest request) {
         plannerListService.update(request, userId);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping(value = "/{userId}/planners/{plannerId}")
+    @DeleteMapping(value = "/users/{userId}/planners/{plannerId}")
     public ResponseEntity<?> deletePlanner(@PathVariable("userId") Long userId, @PathVariable("plannerId") Long plannerId) {
         plannerListService.delete(userId, plannerId);
         return ResponseEntity.ok().build();

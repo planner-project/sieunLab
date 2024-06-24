@@ -11,10 +11,12 @@ import com.planner.travel.domain.planner.query.PlannerQueryService;
 import com.planner.travel.domain.planner.repository.PlannerRepository;
 import com.planner.travel.domain.user.entity.User;
 import com.planner.travel.domain.user.repository.UserRepository;
+import com.planner.travel.global.security.CustomUserDetails;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,13 +30,15 @@ public class PlannerListService {
     private final PlannerQueryService plannerQueryService;
 
     @Transactional(readOnly = true)
-    public Page<PlannerListResponse> getAllPlanners(Long userId, boolean isLoginUser, Pageable pageable) {
+    public Page<PlannerListResponse> getAllPlanners(Long userId, Pageable pageable, CustomUserDetails userDetails) {
         Page<PlannerListResponse> plannerListResponses;
+        Long loginUserId = userDetails.user().getId();
+
         System.out.println("============================================================================");
-        System.out.println("isLoginUser? : " + isLoginUser);
+        System.out.println("isLoginUser? : " + loginUserId.equals(userId));
         System.out.println("============================================================================");
 
-        if (isLoginUser) {
+        if (loginUserId.equals(userId)) {
             plannerListResponses = plannerQueryService.findMyPlannersByUserId(userId, pageable);
 
         } else {

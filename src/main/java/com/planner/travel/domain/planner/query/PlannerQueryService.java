@@ -2,6 +2,7 @@ package com.planner.travel.domain.planner.query;
 
 import com.planner.travel.domain.group.entity.GroupMember;
 import com.planner.travel.domain.group.entity.QGroupMember;
+import com.planner.travel.domain.planner.dto.response.PlanBoxResponse;
 import com.planner.travel.domain.planner.dto.response.PlannerListResponse;
 import com.planner.travel.domain.planner.dto.response.PlannerResponse;
 import com.planner.travel.domain.planner.entity.Planner;
@@ -33,6 +34,19 @@ public class PlannerQueryService {
     public PlannerQueryService(EntityManager entityManager) {
         this.queryFactory = new JPAQueryFactory(entityManager);
         this.planBoxQueryService = new PlanBoxQueryService(entityManager);
+    }
+
+    public Page<PlannerListResponse> findUnPrivatePlanners(Pageable pageable) {
+        QGroupMember qGroupMember = QGroupMember.groupMember;
+        QPlanner qPlanner = QPlanner.planner;
+
+        List<GroupMember> planners = queryFactory
+                .selectFrom(qGroupMember)
+                .where(qGroupMember.planner.isPrivate.isFalse())
+                .orderBy(qPlanner.id.desc())
+                .fetch();
+
+        return PaginationUtil.listToPage(getPlannerListResponses(planners), pageable);
     }
 
     public Page<PlannerListResponse> findMyPlannersByUserId(Long userId, Pageable pageable) {
@@ -111,7 +125,7 @@ public class PlannerQueryService {
                 .collect(Collectors.toList());
     }
 
-    public PlannerResponse findPlannerById(Long plannerId) {
+    public PlannerResponse findPlannerById(Long plannerId, String status) {
         QPlanner qPlanner = QPlanner.planner;
         String startDate = "";
         String endDate = "";
@@ -137,7 +151,7 @@ public class PlannerQueryService {
                 startDate,
                 endDate,
                 planner.isPrivate(),
-                planBoxQueryService.findPlanBoxesByPlannerId(planner.getId())
+                planBoxQueryService.findPlanBoxesByPlannerId(planner.getId(), status)
         );
     }
 
