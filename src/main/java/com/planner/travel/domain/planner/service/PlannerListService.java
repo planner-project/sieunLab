@@ -11,8 +11,12 @@ import com.planner.travel.domain.planner.query.PlannerQueryService;
 import com.planner.travel.domain.planner.repository.PlannerRepository;
 import com.planner.travel.domain.user.entity.User;
 import com.planner.travel.domain.user.repository.UserRepository;
+import com.planner.travel.global.jwt.token.SubjectExtractor;
+import com.planner.travel.global.jwt.token.TokenExtractor;
 import com.planner.travel.global.security.CustomUserDetails;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,24 +32,29 @@ public class PlannerListService {
     private final GroupMemberRepository groupMemberRepository;
     private final GroupMemberQueryService groupMemberQueryService;
     private final PlannerQueryService plannerQueryService;
+    private final TokenExtractor tokenExtractor;
+    private final SubjectExtractor subjectExtractor;
+
 
     @Transactional(readOnly = true)
-    public Page<PlannerListResponse> getAllPlanners(Long userId, Pageable pageable, CustomUserDetails userDetails) {
-        Page<PlannerListResponse> plannerListResponses;
-        Long loginUserId = userDetails.user().getId();
-
-        System.out.println("============================================================================");
-        System.out.println("isLoginUser? : " + loginUserId.equals(userId));
-        System.out.println("============================================================================");
+    public Page<PlannerListResponse> getAllPlanners(Long userId, Pageable pageable, HttpServletRequest request) {
+        String accessToken = tokenExtractor.getAccessTokenFromHeader(request);
+        Long loginUserId = subjectExtractor.getUserIdFromToken(accessToken);
 
         if (loginUserId.equals(userId)) {
-            plannerListResponses = plannerQueryService.findMyPlannersByUserId(userId, pageable);
+            return getMyPlanners(userId, pageable);
 
         } else {
-            plannerListResponses = plannerQueryService.findPlannersByUserId(userId, pageable);
+            return getOtherPlanners(userId, pageable);
         }
+    }
 
-        return plannerListResponses;
+    private Page<PlannerListResponse> getMyPlanners(Long userId, Pageable pageable) {
+        return plannerQueryService.findMyPlannersByUserId(userId, pageable);
+    }
+
+    private Page<PlannerListResponse> getOtherPlanners(Long userId, Pageable pageable) {
+        return plannerQueryService.findPlannersByUserId(userId, pageable);
     }
 
     @Transactional

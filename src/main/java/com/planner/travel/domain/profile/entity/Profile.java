@@ -1,6 +1,5 @@
 package com.planner.travel.domain.profile.entity;
 
-import com.planner.travel.global.util.image.entity.Image;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +16,12 @@ public class Profile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "imageId")
-    private Image image;
+    private String profileImageUrl;
+
+    public Profile withProfileImageUrl(String profileImageUrl) {
+        return Profile.builder()
+                .id(this.id)
+                .profileImageUrl(profileImageUrl)
+                .build();
+    }
 }

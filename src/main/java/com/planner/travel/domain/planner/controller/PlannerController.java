@@ -28,8 +28,6 @@ public class PlannerController {
     private final PlannerQueryService plannerQueryService;
     private final PlannerListService plannerListService;
     private final PlannerService plannerService;
-    private final TokenExtractor tokenExtractor;
-    private final SubjectExtractor subjectExtractor;
 
     @GetMapping(value = "/planners")
     public Page<PlannerListResponse> getAllPlanners(Pageable pageable) {
@@ -37,20 +35,17 @@ public class PlannerController {
     }
 
     @GetMapping(value = "/users/{userId}/planners")
-    public Page<PlannerListResponse> getPlanners(@PathVariable("userId") Long userId, Pageable pageable, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        Page<PlannerListResponse> planners = plannerListService.getAllPlanners(userId, pageable, userDetails);
-        return planners;
+    public Page<PlannerListResponse> getPlanners(
+            @PathVariable("userId") Long userId,
+            Pageable pageable,
+            HttpServletRequest request
+    ) {
+        return plannerListService.getAllPlanners(userId, pageable, request);
     }
 
     @GetMapping(value = "/users/{userId}/planners/{plannerId}")
-    public ResponseEntity<PlannerResponse> getPlanner(@PathVariable("userId") Long userId, @PathVariable("plannerId") Long plannerId) {
-        PlannerResponse planner = plannerService.getPlanner(plannerId, "my");
-        return ResponseEntity.ok(planner);
-    }
-
-    @GetMapping(value = "/planners/{plannerId}")
-    public ResponseEntity<PlannerResponse> getOtherPlanner(@PathVariable("plannerId") Long plannerId) {
-        PlannerResponse planner = plannerService.getPlanner(plannerId, "other");
+    public ResponseEntity<PlannerResponse> getPlanner(@PathVariable("userId") Long userId, @PathVariable("plannerId") Long plannerId, HttpServletRequest request) {
+        PlannerResponse planner = plannerService.getPlanner(userId, plannerId, request);
         return ResponseEntity.ok(planner);
     }
 

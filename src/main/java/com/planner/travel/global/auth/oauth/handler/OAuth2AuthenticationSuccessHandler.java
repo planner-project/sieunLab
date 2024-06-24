@@ -66,7 +66,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         String encodedUserTag = URLEncoder.encode(String.valueOf(customOAuth2User.getUser().getUserTag()), StandardCharsets.UTF_8);
         String encodedBirthday = URLEncoder.encode(String.valueOf(customOAuth2User.getUser().getBirthday()), StandardCharsets.UTF_8);
         String encodedEmail = URLEncoder.encode(String.valueOf(customOAuth2User.getUser().getEmail()), StandardCharsets.UTF_8);
-        String encodedProfileImgUrl = URLEncoder.encode(String.valueOf(customOAuth2User.getUser().getProfile().getImage().getImageUrl()), StandardCharsets.UTF_8);
+        String encodedProfileImgUrl = URLEncoder.encode(String.valueOf(customOAuth2User.getUser().getProfile().getProfileImageUrl()), StandardCharsets.UTF_8);
         String encodedIsBirthDay = URLEncoder.encode(String.valueOf(isBirthdayToday(customOAuth2User.getUser().getBirthday())));
         String encodedSex = URLEncoder.encode(String.valueOf(customOAuth2User.getUser().getSex()));
 

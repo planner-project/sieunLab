@@ -2,16 +2,12 @@ package com.planner.travel.domain.planner.query;
 
 import com.planner.travel.domain.group.entity.GroupMember;
 import com.planner.travel.domain.group.entity.QGroupMember;
-import com.planner.travel.domain.planner.dto.response.PlanBoxResponse;
 import com.planner.travel.domain.planner.dto.response.PlannerListResponse;
 import com.planner.travel.domain.planner.dto.response.PlannerResponse;
 import com.planner.travel.domain.planner.entity.Planner;
 import com.planner.travel.domain.planner.entity.QPlanBox;
 import com.planner.travel.domain.planner.entity.QPlanner;
-import com.planner.travel.domain.profile.entity.QProfile;
-import com.planner.travel.domain.user.entity.QUser;
 import com.planner.travel.global.util.PaginationUtil;
-import com.planner.travel.global.util.image.entity.QImage;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.jetbrains.annotations.NotNull;
@@ -97,7 +93,7 @@ public class PlannerQueryService {
                     }
 
                     for (int i = 0; i < lastId; i++) {
-                        String profileImgUrl = groupMembers.get(i).getUser().getProfile().getImage().getImageUrl();
+                        String profileImgUrl = groupMembers.get(i).getUser().getProfile().getProfileImageUrl();
 
                         if (profileImgUrl.isEmpty()) {
                             profileImgUrl = "";

@@ -1,5 +1,7 @@
 package com.planner.travel.domain.profile.service;
 
+import com.planner.travel.domain.profile.entity.Profile;
+import com.planner.travel.domain.profile.repository.ProfileRepository;
 import com.planner.travel.domain.user.component.UserFinder;
 import com.planner.travel.domain.user.entity.User;
 import com.planner.travel.domain.user.repository.UserRepository;
@@ -14,28 +16,26 @@ import java.nio.file.Path;
 @Service
 @RequiredArgsConstructor
 public class ProfileImageService {
-    private final UserRepository userRepository;
     private final ImageUpdateService updateService;
     private final UserFinder userFinder;
+    private final ProfileRepository profileRepository;
 
     public void update(Long userId, MultipartFile multipartFile) throws Exception {
         Path path = updateService.saveImage(userId, multipartFile);
         User user = userFinder.find(userId);
+        Profile profile = user.getProfile();
 
-        user.getProfile()
-                .getImage()
-                .updateImageUrl(path.toString());
+        profile = profile.withProfileImageUrl(path.toString());
 
-        userRepository.save(user);
+        profileRepository.save(profile);
     }
 
     public void delete(Long userId) {
         User user = userFinder.find(userId);
+        Profile profile = user.getProfile();
 
-        user.getProfile()
-                .getImage()
-                .updateImageUrl("");
+        profile = profile.withProfileImageUrl("Default");
 
-        userRepository.save(user);
+        profileRepository.save(profile);
     }
 }

@@ -3,11 +3,6 @@ package com.planner.travel.domain.group.query;
 import com.planner.travel.domain.group.dto.response.GroupMemberResponse;
 import com.planner.travel.domain.group.entity.GroupMember;
 import com.planner.travel.domain.group.entity.QGroupMember;
-import com.planner.travel.domain.planner.entity.QPlanner;
-import com.planner.travel.domain.profile.entity.QProfile;
-import com.planner.travel.domain.user.entity.QUser;
-import com.planner.travel.global.util.image.entity.QImage;
-import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +32,7 @@ public class GroupMemberQueryService {
 
         return groupMembers.stream()
                 .map(groupMember -> {
-                    String profileImgUrl = groupMember.getUser().getProfile().getImage().getImageUrl();
+                    String profileImgUrl = groupMember.getUser().getProfile().getProfileImageUrl();
 
                     if (profileImgUrl.isEmpty()) {
                         profileImgUrl = "";

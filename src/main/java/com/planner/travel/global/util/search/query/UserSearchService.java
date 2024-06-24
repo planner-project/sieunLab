@@ -31,8 +31,8 @@ public class UserSearchService {
 
         List<UserSearchResponse> userSearchResponses = users.stream()
                 .map(user -> {
-                    String imageUrl = (user.getProfile() != null && user.getProfile().getImage() != null)
-                            ? user.getProfile().getImage().getImageUrl()
+                    String imageUrl = (user.getProfile() != null && user.getProfile().getProfileImageUrl().isEmpty())
+                            ? user.getProfile().getProfileImageUrl()
                             : null;
                     return new UserSearchResponse(
                             user.getId(),
