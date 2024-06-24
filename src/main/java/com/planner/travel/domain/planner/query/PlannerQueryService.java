@@ -80,13 +80,17 @@ public class PlannerQueryService {
     @NotNull
     public List<PlannerListResponse> getPlannerListResponses(List<GroupMember> planners) {
         return planners.stream()
-                .map(planner -> {
-                    String startDate = planner.getPlanner().getStartDate();
-                    String endDate = planner.getPlanner().getEndDate();
+                .collect(Collectors.groupingBy(GroupMember::getPlanner))
+                .entrySet()
+                .stream()
+                .map(entry -> {
+                    Planner planner = entry.getKey();
+                    List<GroupMember> groupMembers = entry.getValue();
+
+                    String startDate = planner.getStartDate();
+                    String endDate = planner.getEndDate();
 
                     List<String> profileImages = new ArrayList<>();
-                    List<GroupMember> groupMembers = planners.stream().toList();
-
                     int lastId = groupMembers.size();
                     if (lastId > 3) {
                         lastId = 3;
@@ -94,28 +98,23 @@ public class PlannerQueryService {
 
                     for (int i = 0; i < lastId; i++) {
                         String profileImgUrl = groupMembers.get(i).getUser().getProfile().getProfileImageUrl();
-
-                        if (profileImgUrl.isEmpty()) {
-                            profileImgUrl = "";
-                        }
-
                         profileImages.add(profileImgUrl);
                     }
 
-                    if (planner.getPlanner().getStartDate() == null) {
+                    if (startDate == null) {
                         startDate = "";
                     }
 
-                    if (planner.getPlanner().getEndDate() == null) {
+                    if (endDate == null) {
                         endDate = "";
                     }
 
                     return new PlannerListResponse(
-                            planner.getPlanner().getId(),
-                            planner.getPlanner().getTitle(),
+                            planner.getId(),
+                            planner.getTitle(),
                             startDate,
                             endDate,
-                            planner.getPlanner().isPrivate(),
+                            planner.isPrivate(),
                             profileImages
                     );
                 })
