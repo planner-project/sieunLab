@@ -23,8 +23,15 @@ public class OAuth2SignupService {
 
     @Transactional
     public User signup(String provider, OAuth2UserInfo oAuth2UserInfo) {
+        String profileImage = oAuth2UserInfo.getProfile();
+        System.out.println("profileImage: " + profileImage);
+
+        if (profileImage.isEmpty()) {
+            profileImage = "Default";
+        }
+
         Profile profile = Profile.builder()
-                .profileImageUrl(oAuth2UserInfo.getProfile())
+                .profileImageUrl(profileImage)
                 .build();
 
         User user = User.builder()
