@@ -7,7 +7,6 @@ public record PlanCreateRequest(
         String title,
         LocalTime time,
         String content,
-        String address,
-        boolean isDeleted
+        String address
 ) {
 }
