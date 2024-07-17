@@ -26,7 +26,7 @@ public class PlanBoxController {
         planBoxService.create(request, plannerId);
 
         simpMessagingTemplate.convertAndSend("/sub/planner/" + plannerId,
-                Map.of("type", "create-planBox", "message", planBoxService.getAllPlanBox(plannerId))
+                Map.of("type", "create-planBox", "message", planBoxService.getAllPlanBox(plannerId, "my"))
         );
     }
 
@@ -35,7 +35,7 @@ public class PlanBoxController {
         planBoxService.update(request, plannerId, planBoxId);
 
         simpMessagingTemplate.convertAndSend("/sub/planner/" + plannerId,
-                Map.of("type", "update-planBox", "message", planBoxService.getAllPlanBox(plannerId))
+                Map.of("type", "update-planBox", "message", planBoxService.getAllPlanBox(plannerId, "my"))
         );
     }
 
@@ -44,7 +44,7 @@ public class PlanBoxController {
         planBoxService.delete(plannerId, planBoxId);
 
     simpMessagingTemplate.convertAndSend("/sub/planner/" + plannerId,
-                Map.of("type", "delete-planBox", "message", planBoxService.getAllPlanBox(plannerId))
+                Map.of("type", "delete-planBox", "message", planBoxService.getAllPlanBox(plannerId, "my"))
         );
     }
 }

@@ -57,4 +57,33 @@ public class PlanQueryService {
 
         return planResponses;
     }
+
+    public List<PlanResponse> findOtherPlanByPlanBoxId(Long planBoxId) {
+        QPlanBox qPlanBox = QPlanBox.planBox;
+        QPlan qPlan = QPlan.plan;
+
+        List<Plan> plans = queryFactory
+                .selectFrom(qPlan)
+                .join(qPlan.planBox, qPlanBox)
+                .where(qPlanBox.id.eq(planBoxId)
+                        .and(qPlanBox.isDeleted.isFalse()
+                        .and(qPlan.isPrivate.isFalse())
+                                .and(qPlan.isDeleted.isFalse()))
+                )
+                .orderBy(qPlan.time.asc())
+                .fetch();
+
+        List<PlanResponse> planResponses = plans.stream()
+                .map(plan -> new PlanResponse(
+                        plan.getId(),
+                        plan.isPrivate(),
+                        plan.getTitle(),
+                        plan.getTime(),
+                        plan.getContent(),
+                        plan.getAddress()
+                ))
+                .collect(Collectors.toList());
+
+        return planResponses;
+    }
 }

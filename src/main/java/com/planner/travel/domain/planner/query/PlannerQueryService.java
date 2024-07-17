@@ -7,13 +7,13 @@ import com.planner.travel.domain.planner.dto.response.PlannerResponse;
 import com.planner.travel.domain.planner.entity.Planner;
 import com.planner.travel.domain.planner.entity.QPlanBox;
 import com.planner.travel.domain.planner.entity.QPlanner;
-import com.planner.travel.domain.profile.entity.QProfile;
-import com.planner.travel.domain.user.entity.QUser;
-import com.planner.travel.global.util.image.entity.QImage;
+import com.planner.travel.global.util.PaginationUtil;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -32,7 +32,21 @@ public class PlannerQueryService {
         this.planBoxQueryService = new PlanBoxQueryService(entityManager);
     }
 
-    public List<PlannerListResponse> findMyPlannersByUserId(Long userId) {
+    public Page<PlannerListResponse> findUnPrivatePlanners(Pageable pageable) {
+        QGroupMember qGroupMember = QGroupMember.groupMember;
+        QPlanner qPlanner = QPlanner.planner;
+
+        List<GroupMember> planners = queryFactory
+                .selectFrom(qGroupMember)
+                .where(qGroupMember.planner.isPrivate.isFalse()
+                        .and(qGroupMember.isHost.isTrue()))
+                .orderBy(qPlanner.id.desc())
+                .fetch();
+
+        return PaginationUtil.listToPage(getPlannerListResponses(planners), pageable);
+    }
+
+    public Page<PlannerListResponse> findMyPlannersByUserId(Long userId, Pageable pageable) {
         QGroupMember qGroupMember = QGroupMember.groupMember;
         QPlanner qPlanner = QPlanner.planner;
 
@@ -44,10 +58,10 @@ public class PlannerQueryService {
                 .orderBy(qPlanner.id.desc())
                 .fetch();
 
-        return getPlannerListResponses(planners);
+        return PaginationUtil.listToPage(getPlannerListResponses(planners), pageable);
     }
 
-    public List<PlannerListResponse> findPlannersByUserId(Long userId) {
+    public Page<PlannerListResponse> findPlannersByUserId(Long userId, Pageable pageable) {
         QGroupMember qGroupMember = QGroupMember.groupMember;
         QPlanner qPlanner = QPlanner.planner;
 
@@ -60,55 +74,54 @@ public class PlannerQueryService {
                 .orderBy(qPlanner.id.desc())
                 .fetch();
 
-        return getPlannerListResponses(planners);
+        return PaginationUtil.listToPage(getPlannerListResponses(planners), pageable);
     }
 
     @NotNull
-    private List<PlannerListResponse> getPlannerListResponses(List<GroupMember> planners) {
+    public List<PlannerListResponse> getPlannerListResponses(List<GroupMember> planners) {
         return planners.stream()
-                .map(planner -> {
-                    String startDate = planner.getPlanner().getStartDate();
-                    String endDate = planner.getPlanner().getEndDate();
+                .collect(Collectors.groupingBy(GroupMember::getPlanner))
+                .entrySet()
+                .stream()
+                .map(entry -> {
+                    Planner planner = entry.getKey();
+                    List<GroupMember> groupMembers = entry.getValue();
+
+                    String startDate = planner.getStartDate();
+                    String endDate = planner.getEndDate();
 
                     List<String> profileImages = new ArrayList<>();
-                    List<GroupMember> groupMembers = planners.stream().toList();
-
                     int lastId = groupMembers.size();
                     if (lastId > 3) {
                         lastId = 3;
                     }
 
                     for (int i = 0; i < lastId; i++) {
-                        String profileImgUrl = groupMembers.get(i).getUser().getProfile().getImage().getImageUrl();
-
-                        if (!profileImgUrl.isEmpty()) {
-                            profileImgUrl = "";
-                        }
-
+                        String profileImgUrl = groupMembers.get(i).getUser().getProfile().getProfileImageUrl();
                         profileImages.add(profileImgUrl);
                     }
 
-                    if (planner.getPlanner().getStartDate() == null) {
+                    if (startDate == null) {
                         startDate = "";
                     }
 
-                    if (planner.getPlanner().getEndDate() == null) {
+                    if (endDate == null) {
                         endDate = "";
                     }
 
                     return new PlannerListResponse(
-                            planner.getPlanner().getId(),
-                            planner.getPlanner().getTitle(),
+                            planner.getId(),
+                            planner.getTitle(),
                             startDate,
                             endDate,
-                            planner.getPlanner().isPrivate(),
+                            planner.isPrivate(),
                             profileImages
                     );
                 })
                 .collect(Collectors.toList());
     }
 
-    public PlannerResponse findPlannerById(Long plannerId) {
+    public PlannerResponse findPlannerById(Long plannerId, String status) {
         QPlanner qPlanner = QPlanner.planner;
         String startDate = "";
         String endDate = "";
@@ -134,7 +147,7 @@ public class PlannerQueryService {
                 startDate,
                 endDate,
                 planner.isPrivate(),
-                planBoxQueryService.findPlanBoxesByPlannerId(planner.getId())
+                planBoxQueryService.findPlanBoxesByPlannerId(planner.getId(), status)
         );
     }
 

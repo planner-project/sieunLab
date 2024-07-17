@@ -8,17 +8,9 @@ import com.planner.travel.domain.user.entity.User;
 import com.planner.travel.domain.user.repository.UserRepository;
 import com.planner.travel.global.auth.oauth.entity.OAuth2UserInfo;
 import com.planner.travel.global.util.RandomNumberUtil;
-import com.planner.travel.global.util.image.entity.Category;
-import com.planner.travel.global.util.image.entity.Image;
-import com.planner.travel.global.util.image.repository.ImageRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
@@ -27,26 +19,20 @@ import java.time.LocalDateTime;
 public class OAuth2SignupService {
     private final UserRepository userRepository;
     private final ProfileRepository profileRepository;
-    private final ImageRepository imageRepository;
     private final RandomNumberUtil randomNumberUtil;
 
+    @Transactional
     public User signup(String provider, OAuth2UserInfo oAuth2UserInfo) {
+        String profileImage = oAuth2UserInfo.getProfile();
+        System.out.println("profileImage: " + profileImage);
 
-        Image image = Image.builder()
-                .category(Category.PROFILE)
-                .imageUrl(oAuth2UserInfo.getProfile())
-                .createdAt(LocalDateTime.now())
-                .isThumb(false)
-                .isDeleted(false)
-                .build();
-
-        imageRepository.save(image);
+        if (profileImage.isEmpty()) {
+            profileImage = "Default";
+        }
 
         Profile profile = Profile.builder()
-                .image(image)
+                .profileImageUrl(profileImage)
                 .build();
-
-        profileRepository.save(profile);
 
         User user = User.builder()
                 .provider(provider)
@@ -60,6 +46,7 @@ public class OAuth2SignupService {
                 .sex(Sex.NONE)
                 .build();
 
+        profileRepository.save(profile);
         userRepository.save(user);
 
         return user;

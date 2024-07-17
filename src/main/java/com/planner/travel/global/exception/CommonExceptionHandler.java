@@ -1,5 +1,6 @@
 package com.planner.travel.global.exception;
 
+import jakarta.mail.internet.AddressException;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -9,7 +10,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
-public class EntityExceptionHandler {
+public class CommonExceptionHandler {
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<?> handleEntityNotFoundException() {
         ErrorResponse errorResponse = new ErrorResponse("INVALID_VALUE_01");
@@ -31,6 +32,12 @@ public class EntityExceptionHandler {
     @ExceptionHandler(EntityExistsException.class)
     public ResponseEntity<?> handleEntityExistsException() {
         ErrorResponse errorResponse = new ErrorResponse("INVALID_VALUE_04");
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AddressException.class)
+    public ResponseEntity<?> handleEntityAddressException() {
+        ErrorResponse errorResponse = new ErrorResponse("MAIL_01");
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 }

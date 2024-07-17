@@ -10,8 +10,8 @@ import com.planner.travel.domain.user.repository.UserRepository;
 import com.planner.travel.global.util.RandomNumberUtil;
 import com.planner.travel.global.util.RedisUtil;
 import com.planner.travel.global.util.image.entity.Category;
-import com.planner.travel.global.util.image.entity.Image;
-import com.planner.travel.global.util.image.repository.ImageRepository;
+import com.planner.travel.global.util.image.service.ImageUpdateService;
+import com.planner.travel.global.util.mail.service.MailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,10 +26,10 @@ import java.time.LocalDateTime;
 public class SignupService {
     private final UserRepository userRepository;
     private final ProfileRepository profileRepository;
-    private final ImageRepository imageRepository;
     private final PasswordEncoder passwordEncoder;
     private final RandomNumberUtil randomNumberUtil;
     private final RedisUtil redisUtil;
+    private final MailService mailService;
 
     @Transactional
     public void signup(SignupRequest request) {
@@ -40,18 +40,8 @@ public class SignupService {
 
         validateTempCode(request.email(), request.TempCode());
 
-        Image image = Image.builder()
-                .category(Category.PROFILE)
-                .imageUrl("")
-                .createdAt(LocalDateTime.now())
-                .isThumb(false)
-                .isDeleted(false)
-                .build();
-
-        imageRepository.save(image);
-
         Profile profile = Profile.builder()
-                .image(image)
+                .profileImageUrl("Default")
                 .build();
 
         profileRepository.save(profile);
@@ -74,7 +64,7 @@ public class SignupService {
         userRepository.save(user);
     }
 
-    private void validateTempCode(String email, String tempCode) {
+    public void validateTempCode(String email, String tempCode) {
         String tempCodeFromRedis = redisUtil.getData(email);
 
         if (tempCode.equals(tempCodeFromRedis)) {

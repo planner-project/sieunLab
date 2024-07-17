@@ -69,8 +69,8 @@ public class GroupMemberService {
     }
 
     @Transactional
-    public void deleteGroupMembers(GroupMemberDeleteRequest request) {
-        GroupMember groupMember = groupMemberRepository.findById(request.groupMemberId())
+    public void deleteGroupMembers(Long groupMemberId) {
+        GroupMember groupMember = groupMemberRepository.findById(groupMemberId)
                 .orElseThrow(() -> new EntityNotFoundException("Group member not found"));
 
         groupMember.updateIsLeaved(true);

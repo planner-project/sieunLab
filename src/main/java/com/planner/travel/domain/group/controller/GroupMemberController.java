@@ -36,16 +36,16 @@ public class GroupMemberController {
     }
 
     @PostMapping(value = "/{userId}/planners/{plannerId}/group")
-    public ResponseEntity<List<GroupMemberResponse>> addGroupMember(@PathVariable("plannerId") Long plannerId, @RequestBody GroupMemberAddRequest request) {
+    public ResponseEntity<List<GroupMemberResponse>> addGroupMember(@PathVariable("userId") Long userId, @PathVariable("plannerId") Long plannerId, @RequestBody GroupMemberAddRequest request) {
         groupMemberService.addGroupMembers(plannerId, request);
         List<GroupMemberResponse> groupMemberResponses = groupMemberService.getAllGroupMembers(plannerId);
 
         return ResponseEntity.ok(groupMemberResponses);
     }
 
-    @PatchMapping(value = "/{userId}/planners/{plannerId}/group")
-    public ResponseEntity<List<GroupMemberResponse>> deleteGroupMember(@PathVariable("plannerId") Long plannerId, @RequestBody GroupMemberDeleteRequest request) {
-        groupMemberService.deleteGroupMembers(request);
+    @PatchMapping(value = "/{userId}/planners/{plannerId}/group/{groupMemberId}")
+    public ResponseEntity<List<GroupMemberResponse>> deleteGroupMember(@PathVariable("plannerId") Long plannerId, @PathVariable("groupMemberId") Long groupMemberId) {
+        groupMemberService.deleteGroupMembers(groupMemberId);
         List<GroupMemberResponse> groupMemberResponses = groupMemberService.getAllGroupMembers(plannerId);
 
         return ResponseEntity.ok(groupMemberResponses);

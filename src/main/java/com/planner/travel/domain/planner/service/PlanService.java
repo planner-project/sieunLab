@@ -50,33 +50,38 @@ public class PlanService {
 
         planRepository.save(plan);
     }
+
     @Transactional
     public void update(PlanUpdateRequest request, Long planId) {
         // Plan 엔티티 조회
         Plan plan = planRepository.findById(planId)
                 .orElseThrow(() -> new EntityNotFoundException("Plan not found for id: " + planId));
 
-//        // Plan 정보 업데이트
+        // Plan 정보 업데이트
         if (request.isPrivate() != plan.isPrivate()) {
             plan.updateIsPrivate(request.isPrivate());
         }
-        if (request.title().isEmpty()) {
+
+        if (request.title() != null && !request.title().isEmpty() && !request.title().equals(plan.getTitle())) {
             plan.updateTitle(request.title());
         }
-        if (request.time() != plan.getTime()){
+
+        if (request.time() != null && !request.time().equals(plan.getTime())) {
             plan.updateTime(request.time());
         }
 
-        if (request.content().isEmpty() ) {
+        if (request.content() != null && !request.content().isEmpty() && !request.content().equals(plan.getContent())) {
             plan.updateContent(request.content());
         }
-        if (request.address().isEmpty()) {
+
+        if (request.address() != null && !request.address().isEmpty() && !request.address().equals(plan.getAddress())) {
             plan.updateAddress(request.address());
         }
 
         // Plan 엔티티 저장
         planRepository.save(plan);
     }
+
     @Transactional
     public void delete(Long planId) {
         // Plan 엔티티 조회

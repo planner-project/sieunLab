@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MailController {
     private final MailService mailService;
 
-    @PostMapping("/authentication")
+    @PostMapping("/authentication/send")
     public ResponseEntity<?> sendAuthenticationEmail(@RequestBody MailAuthenticationRequest request) throws MessagingException {
         MailAuthenticaionMessage mailAuthenticaionMessage = new MailAuthenticaionMessage(
                 request.email(),

@@ -4,7 +4,6 @@ import com.planner.travel.domain.group.entity.GroupMember;
 import com.planner.travel.domain.group.query.GroupMemberQueryService;
 import com.planner.travel.domain.group.repository.GroupMemberRepository;
 import com.planner.travel.domain.planner.dto.request.PlannerCreateRequest;
-import com.planner.travel.domain.planner.dto.request.PlannerDeleteRequest;
 import com.planner.travel.domain.planner.dto.request.PlannerUpdateRequest;
 import com.planner.travel.domain.planner.dto.response.PlannerListResponse;
 import com.planner.travel.domain.planner.entity.Planner;
@@ -12,13 +11,18 @@ import com.planner.travel.domain.planner.query.PlannerQueryService;
 import com.planner.travel.domain.planner.repository.PlannerRepository;
 import com.planner.travel.domain.user.entity.User;
 import com.planner.travel.domain.user.repository.UserRepository;
+import com.planner.travel.global.jwt.token.SubjectExtractor;
+import com.planner.travel.global.jwt.token.TokenExtractor;
+import com.planner.travel.global.security.CustomUserDetails;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -28,22 +32,29 @@ public class PlannerListService {
     private final GroupMemberRepository groupMemberRepository;
     private final GroupMemberQueryService groupMemberQueryService;
     private final PlannerQueryService plannerQueryService;
+    private final TokenExtractor tokenExtractor;
+    private final SubjectExtractor subjectExtractor;
+
 
     @Transactional(readOnly = true)
-    public List<PlannerListResponse> getAllPlanners(Long userId, boolean isLoginUser) {
-        List<PlannerListResponse> plannerListResponses = new ArrayList<>();
-        System.out.println("============================================================================");
-        System.out.println("isLoginUser? : " + isLoginUser);
-        System.out.println("============================================================================");
+    public Page<PlannerListResponse> getAllPlanners(Long userId, Pageable pageable, HttpServletRequest request) {
+        String accessToken = tokenExtractor.getAccessTokenFromHeader(request);
+        Long loginUserId = subjectExtractor.getUserIdFromToken(accessToken);
 
-        if (isLoginUser) {
-            plannerListResponses = plannerQueryService.findMyPlannersByUserId(userId);
+        if (loginUserId.equals(userId)) {
+            return getMyPlanners(userId, pageable);
 
         } else {
-            plannerListResponses = plannerQueryService.findPlannersByUserId(userId);
+            return getOtherPlanners(userId, pageable);
         }
+    }
 
-        return plannerListResponses;
+    private Page<PlannerListResponse> getMyPlanners(Long userId, Pageable pageable) {
+        return plannerQueryService.findMyPlannersByUserId(userId, pageable);
+    }
+
+    private Page<PlannerListResponse> getOtherPlanners(Long userId, Pageable pageable) {
+        return plannerQueryService.findPlannersByUserId(userId, pageable);
     }
 
     @Transactional
@@ -52,6 +63,7 @@ public class PlannerListService {
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
         Planner planner = Planner.builder()
+                .user(user)
                 .title(request.title())
                 .startDate("")
                 .endDate("")
@@ -84,8 +96,8 @@ public class PlannerListService {
     }
 
     @Transactional
-    public void delete(PlannerDeleteRequest request, Long plannerId) {
-        GroupMember groupMember = groupMemberQueryService.findGroupMember(request.userId(), plannerId);
+    public void delete(Long userId, Long plannerId) {
+        GroupMember groupMember = groupMemberQueryService.findGroupMember(userId, plannerId);
 
         groupMember.updateIsLeaved(true);
         groupMemberRepository.save(groupMember);

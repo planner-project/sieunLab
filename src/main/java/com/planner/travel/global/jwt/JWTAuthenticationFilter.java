@@ -52,6 +52,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                 response.setStatus(HttpStatus.UNAUTHORIZED.value());
                 setResponse(response, "TOKEN_01");
 
+                return;
             }
         }
 

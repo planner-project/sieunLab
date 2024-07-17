@@ -1,6 +1,7 @@
 package com.planner.travel.domain.planner.query;
 
 import com.planner.travel.domain.planner.dto.response.PlanBoxResponse;
+import com.planner.travel.domain.planner.dto.response.PlanResponse;
 import com.planner.travel.domain.planner.entity.PlanBox;
 import com.planner.travel.domain.planner.entity.QPlanBox;
 import com.planner.travel.domain.planner.entity.QPlanner;
@@ -9,6 +10,7 @@ import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,7 +25,7 @@ public class PlanBoxQueryService {
         this.planQueryService = new PlanQueryService(entityManager);
     }
 
-    public List<PlanBoxResponse> findPlanBoxesByPlannerId(Long plannerId) {
+    public List<PlanBoxResponse> findPlanBoxesByPlannerId(Long plannerId, String status) {
         QPlanner qPlanner = QPlanner.planner;
         QPlanBox qPlanBox = QPlanBox.planBox;
 
@@ -40,7 +42,9 @@ public class PlanBoxQueryService {
                 .map(planBox -> new PlanBoxResponse(
                         planBox.getId(),
                         planBox.getPlanDate(),
-                        planQueryService.findPlanByPlanBoxId(planBox.getId())
+                        status.equals("other") ?
+                                planQueryService.findOtherPlanByPlanBoxId(planBox.getId())
+                                : planQueryService.findPlanByPlanBoxId(planBox.getId())
                 ))
                 .collect(Collectors.toList());
 
