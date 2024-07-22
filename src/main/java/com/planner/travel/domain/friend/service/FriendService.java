@@ -12,6 +12,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 public class FriendService {
@@ -29,6 +31,7 @@ public class FriendService {
                 .friendUserId(request.userId())
                 .isRequested(false)
                 .isAccepted(false)
+                .requestedAt(LocalDateTime.now())
                 .build();
 
         friendRepository.save(friend);

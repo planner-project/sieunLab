@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Builder
@@ -27,6 +29,8 @@ public class Friend {
     private boolean isAccepted;
 
     private boolean isDeleted;
+
+    private LocalDateTime requestedAt;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
