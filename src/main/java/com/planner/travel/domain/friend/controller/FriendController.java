@@ -32,7 +32,7 @@ public class FriendController {
     }
 
     @PostMapping(value = "/friends/request")
-    public ResponseEntity<?> requestFriend(@PathVariable("userId") Long userId, @RequestBody FriendRequestRequest request) {
+    public ResponseEntity<?> requestFriend(@RequestBody FriendRequestRequest request) {
         friendService.requestFriend(request);
         return ResponseEntity.ok().build();
     }
