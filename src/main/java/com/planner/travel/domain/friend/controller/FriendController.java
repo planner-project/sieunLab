@@ -1,7 +1,6 @@
 package com.planner.travel.domain.friend.controller;
 
-import com.planner.travel.domain.friend.dto.request.FriendApproveRequest;
-import com.planner.travel.domain.friend.dto.request.FriendDeleteRequest;
+import com.planner.travel.domain.friend.dto.request.FriendRequest;
 import com.planner.travel.domain.friend.dto.request.FriendRequestRequest;
 import com.planner.travel.domain.friend.dto.response.FriendResponse;
 import com.planner.travel.domain.friend.query.FriendQueryService;
@@ -38,13 +37,13 @@ public class FriendController {
     }
 
     @PostMapping(value = "/users/{userId}/friends/accept")
-    public ResponseEntity<?> acceptFriend(@PathVariable("userId") Long userId, @RequestBody FriendApproveRequest request) {
+    public ResponseEntity<?> acceptFriend(@PathVariable("userId") Long userId, @RequestBody FriendRequest request) {
         friendService.acceptFriend(request);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping(value = "/users/{userId}/friends/delete")
-    public ResponseEntity<?> deleteFriend(@PathVariable("userId") Long userId, @RequestBody FriendDeleteRequest request) {
+    @PatchMapping(value = "/users/{userId}/friends/delete")
+    public ResponseEntity<?> deleteFriend(@PathVariable("userId") Long userId, @RequestBody FriendRequest request) {
         friendService.deleteFriend(request);
         return ResponseEntity.ok().build();
     }
