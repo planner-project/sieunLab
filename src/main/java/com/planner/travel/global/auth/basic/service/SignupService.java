@@ -38,8 +38,6 @@ public class SignupService {
                     throw new IllegalArgumentException();
                 });
 
-        validateTempCode(request.email(), request.TempCode());
-
         Profile profile = Profile.builder()
                 .profileImageUrl("Default")
                 .build();
@@ -67,7 +65,7 @@ public class SignupService {
     public void validateTempCode(String email, String tempCode) {
         String tempCodeFromRedis = redisUtil.getData(email);
 
-        if (tempCode.equals(tempCodeFromRedis)) {
+        if (!tempCode.equals(tempCodeFromRedis)) {
             throw new IllegalArgumentException();
         }
     }

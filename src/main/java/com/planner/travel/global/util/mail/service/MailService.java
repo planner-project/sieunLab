@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
+import java.time.Duration;
+
 @Service
 @RequiredArgsConstructor
 public class MailService {
@@ -29,7 +31,7 @@ public class MailService {
         MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
 
         Long tempCode = randomNumberUtil.setTempCode();
-        redisUtil.setData(message.to(), String.valueOf(tempCode));
+        redisUtil.setDataWithExpire(message.to(), String.valueOf(tempCode), Duration.ofMinutes(5));
 
         messageHelper.setTo(message.to());
         messageHelper.setSubject(message.subject());
