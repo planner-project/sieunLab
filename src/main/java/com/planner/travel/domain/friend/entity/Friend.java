@@ -47,4 +47,9 @@ public class Friend {
                 .status(Status.FRIENDED)
                 .build();
     }
+
+    public User getFriendOf(Long userId) {
+        if (this.user.getId().equals(userId)) return this.friend;
+        else return this.user;
+    }
 }
