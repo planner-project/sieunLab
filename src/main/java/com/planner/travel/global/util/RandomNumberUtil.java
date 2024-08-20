@@ -13,17 +13,20 @@ public class RandomNumberUtil {
 
     public Long setUserCode() {
         Random random = new Random();
-        long randomNumber = random.nextLong(9000) + 1000;
+        long randomNumber = generateRandomNumberInRange(1000, 9999);
 
         while (userRepository.findByUserTag(randomNumber).isPresent()) {
-            randomNumber = random.nextLong(9000) + 1000;
+            randomNumber = generateRandomNumberInRange(1000, 9999);
         }
         return randomNumber;
     }
 
     public Long setTempCode() {
+        return generateRandomNumberInRange(100000, 999999);
+    }
+
+    private long generateRandomNumberInRange(long min, long max) {
         Random random = new Random();
-        long randomNumber = random.nextLong(900000) + 100000;
-        return randomNumber;
+        return min + (long) (random.nextDouble() * (max - min + 1));
     }
 }
