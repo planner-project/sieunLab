@@ -1,5 +1,7 @@
 FROM openjdk:17 as builder
 
+RUN apt-get update && apt-get install -y findutils
+
 COPY . /app
 
 WORKDIR /app
