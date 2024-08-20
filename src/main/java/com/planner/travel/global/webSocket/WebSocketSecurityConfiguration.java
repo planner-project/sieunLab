@@ -22,7 +22,7 @@ public class WebSocketSecurityConfiguration implements WebSocketMessageBrokerCon
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry
-                .addEndpoint("/ws")
+                .addEndpoint("/wss")
                 .setAllowedOriginPatterns("*")
                 .setHandshakeHandler(customHandshakeHandler)
                 .withSockJS();
