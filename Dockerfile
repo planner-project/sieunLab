@@ -4,6 +4,8 @@ COPY . /app
 
 WORKDIR /app
 
+RUN chmod +x ./gradlew
+
 RUN ./gradlew build --no-daemon
 
 FROM openjdk:17
