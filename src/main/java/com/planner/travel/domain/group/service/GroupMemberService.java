@@ -61,7 +61,7 @@ public class GroupMemberService {
                 groupMemberRepository.save(newGroupMember);
 
             } else {
-                groupMember.updateIsLeaved(false);
+                groupMember.withIsLeaved();
 
                 groupMemberRepository.save(groupMember);
             }
@@ -73,7 +73,7 @@ public class GroupMemberService {
         GroupMember groupMember = groupMemberRepository.findById(groupMemberId)
                 .orElseThrow(() -> new EntityNotFoundException("Group member not found"));
 
-        groupMember.updateIsLeaved(true);
+        groupMember.withIsLeaved();
     }
 
     private boolean validateGroupMemberSize(Long plannerId) {

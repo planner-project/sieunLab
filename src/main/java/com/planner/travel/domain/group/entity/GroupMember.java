@@ -33,7 +33,11 @@ public class GroupMember {
     private User user;
 
 
-    public void updateIsLeaved (boolean isLeaved) {
-        this.isLeaved = isLeaved;
+    public GroupMember withIsLeaved () {
+        return GroupMember.builder()
+                .id(this.id)
+                .isHost(this.isHost)
+                .isLeaved(true)
+                .build();
     }
 }
