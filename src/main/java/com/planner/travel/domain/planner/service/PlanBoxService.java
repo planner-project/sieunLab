@@ -47,8 +47,9 @@ public class PlanBoxService {
 
         planBoxRepository.save(planBox);
 
-        planner.updateStartDate(plannerQueryService.getStartDate(plannerId));
-        planner.updateEndDate(plannerQueryService.getEndDate(plannerId));
+        planner = planner.withStartDate(plannerQueryService.getStartDate(plannerId));
+        planner = planner.withEndDate(plannerQueryService.getEndDate(plannerId));
+        plannerRepository.save(planner);
     }
 
     @Transactional
@@ -65,8 +66,9 @@ public class PlanBoxService {
 
         planBoxRepository.save(planBox);
 
-        planner.updateStartDate(plannerQueryService.getStartDate(plannerId));
-        planner.updateEndDate(plannerQueryService.getEndDate(plannerId));
+        planner = planner.withStartDate(plannerQueryService.getStartDate(plannerId));
+        planner = planner.withEndDate(plannerQueryService.getEndDate(plannerId));
+        plannerRepository.save(planner);
 
         return planBoxQueryService.findPlanBoxesByPlannerId(planBoxId, "my");
     }
@@ -82,8 +84,9 @@ public class PlanBoxService {
         planBox.deleted(true);
         planBoxRepository.save(planBox);
 
-        planner.updateStartDate(plannerQueryService.getStartDate(plannerId));
-        planner.updateEndDate(plannerQueryService.getEndDate(plannerId));
+        planner = planner.withStartDate(plannerQueryService.getStartDate(plannerId));
+        planner = planner.withEndDate(plannerQueryService.getEndDate(plannerId));
+        plannerRepository.save(planner);
 
         return planBoxQueryService.findPlanBoxesByPlannerId(planBoxId, "my");
     }

@@ -15,10 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -57,7 +53,7 @@ public class PlannerController {
 
     @PatchMapping(value = "/users/{userId}/planners/{plannerId}")
     public ResponseEntity<?> updatePlanner(@PathVariable("userId") Long userId, @PathVariable("plannerId") Long plannerId, @RequestBody PlannerUpdateRequest request) {
-        plannerListService.update(request, userId);
+        plannerListService.update(request, plannerId);
         return ResponseEntity.ok().build();
     }
 

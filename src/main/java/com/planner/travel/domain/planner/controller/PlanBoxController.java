@@ -22,7 +22,7 @@ public class PlanBoxController {
     private final SimpMessagingTemplate simpMessagingTemplate;
 
     @MessageMapping(value = "/planner/{plannerId}/create")
-    public void createDate(@DestinationVariable Long plannerId, @RequestBody PlanBoxCreateRequest request) {
+    public void createDate(@DestinationVariable("plannerId") Long plannerId, @RequestBody PlanBoxCreateRequest request) {
         planBoxService.create(request, plannerId);
 
         simpMessagingTemplate.convertAndSend("/sub/planner/" + plannerId,

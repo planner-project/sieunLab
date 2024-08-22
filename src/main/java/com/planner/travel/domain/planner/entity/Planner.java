@@ -33,23 +33,58 @@ public class Planner {
     private User user;
 
 
-    public void updateTitle(String title) {
-        this.title = title;
+    public Planner withTitle(String title) {
+        return Planner.builder()
+                .id(this.id)
+                .title(title)
+                .startDate(this.startDate)
+                .endDate(this.endDate)
+                .isDeleted(this.isDeleted)
+                .isPrivate(this.isPrivate)
+                .build();
     }
 
-    public void updateStartDate(String startDate) {
-        this.startDate = startDate;
+    public Planner withStartDate(String startDate) {
+        return Planner.builder()
+                .id(this.id)
+                .title(this.title)
+                .startDate(startDate)
+                .endDate(this.endDate)
+                .isDeleted(this.isDeleted)
+                .isPrivate(this.isPrivate)
+                .build();
     }
 
-    public void updateEndDate(String endDate) {
-        this.endDate = endDate;
+    public Planner withEndDate(String endDate) {
+        return Planner.builder()
+                .id(this.id)
+                .title(this.title)
+                .startDate(this.startDate)
+                .endDate(endDate)
+                .isDeleted(this.isDeleted)
+                .isPrivate(this.isPrivate)
+                .build();
     }
 
-    public void updateIsPrivate(boolean isPrivate) {
-        this.isPrivate = isPrivate;
+    public Planner withIsPrivate(boolean isPrivate) {
+        return Planner.builder()
+                .id(this.id)
+                .title(this.title)
+                .startDate(this.startDate)
+                .endDate(this.endDate)
+                .isDeleted(this.isDeleted)
+                .isPrivate(isPrivate)
+                .build();
     }
 
-    public void updateIsDeleted(boolean isDeleted) {
-        this.isDeleted = isDeleted;
+    public Planner withIsDeleted(boolean isDeleted) {
+        return Planner.builder()
+                .id(this.id)
+                .title(this.title)
+                .startDate(this.startDate)
+                .endDate(this.endDate)
+                .isDeleted(isDeleted)
+                .isPrivate(this.isPrivate)
+                .build();
     }
 }

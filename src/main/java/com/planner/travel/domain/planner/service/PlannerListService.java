@@ -88,10 +88,10 @@ public class PlannerListService {
                 .orElseThrow(() -> new EntityNotFoundException("Planner not found"));
 
         if (isValid(request.title())) {
-            planner.updateTitle(request.title());
+            planner = planner.withTitle(request.title());
         }
 
-        planner.updateIsPrivate(request.isPrivate());
+        planner = planner.withIsPrivate(request.isPrivate());
         plannerRepository.save(planner);
     }
 
@@ -99,7 +99,8 @@ public class PlannerListService {
     public void delete(Long userId, Long plannerId) {
         GroupMember groupMember = groupMemberQueryService.findGroupMember(userId, plannerId);
 
-        groupMember.updateIsLeaved(true);
+        groupMember = groupMember.withIsLeaved();
+        groupMember = groupMemberRepository.save(groupMember);
         groupMemberRepository.save(groupMember);
     }
 
