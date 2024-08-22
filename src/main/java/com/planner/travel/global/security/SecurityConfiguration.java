@@ -95,8 +95,9 @@ public class SecurityConfiguration {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowCredentials(true);
-        config.addAllowedOriginPattern("*");
+        config.addAllowedOrigin("https://trip-now.vercel.app/");
         config.addExposedHeader("Authorization");
+        config.addExposedHeader("ngrok-skip-browser-warning");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         source.registerCorsConfiguration("/**", config);

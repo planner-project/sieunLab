@@ -74,17 +74,17 @@ logging:
     web:
       debug
 
-#server:
-#  port:
-#    8443
-#  ssl:
-#    enabled:
-#      true
-#    key-store:
-#      keystore.p12
-#    key-store-password:
-#      ${SPRING_DATASOURCE_PASSWORD}
-#    key-store-type:
-#      PKCS12
-#    key-alias:
-#      tomcat
+server:
+  port:
+    8443
+  ssl:
+    enabled:
+      true
+    key-store:
+      keystore.p12
+    key-store-password:
+      ${SPRING_DATASOURCE_PASSWORD}
+    key-store-type:
+      PKCS12
+    key-alias:
+      tomcat
