@@ -40,8 +40,8 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> {})
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorizeRequest) ->
                         authorizeRequest
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
@@ -50,7 +50,7 @@ public class SecurityConfiguration {
                                 .requestMatchers("/api/v1/oauth/**").permitAll()
                                 .requestMatchers("/api/v1/auth/token/**").permitAll()
                                 .requestMatchers("/docs/**").permitAll()
-                                .requestMatchers("/ws/**").permitAll()
+                                .requestMatchers("/wss/**").permitAll()
                                 .requestMatchers("/favicon.ico/**").permitAll()
                                 .requestMatchers("/error").permitAll()
                                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
@@ -80,6 +80,9 @@ public class SecurityConfiguration {
                                 .userService(customOAuth2UserService)
                         )
                         .successHandler(oAuth2AuthenticationSuccessHandler)
+                )
+                .requiresChannel(channel ->
+                        channel.anyRequest().requiresSecure()
                 );
 
         return httpSecurity.build();

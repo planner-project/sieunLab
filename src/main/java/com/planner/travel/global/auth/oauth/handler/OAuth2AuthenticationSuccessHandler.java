@@ -29,7 +29,7 @@ import java.time.LocalDate;
 @Component
 @RequiredArgsConstructor
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
-    private String PRE_FRONT_REDIRECT_URL = "http://localhost:5173";
+    private String PRE_FRONT_REDIRECT_URL = "https://trip-now.vercel.app";
     private final ObjectMapper objectMapper;
     private final UserRepository userRepository;
     private final TokenGenerator tokenGenerator;
