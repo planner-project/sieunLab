@@ -38,7 +38,8 @@ public class PlannerQueryService {
 
         List<GroupMember> planners = queryFactory
                 .selectFrom(qGroupMember)
-                .where(qGroupMember.planner.isPrivate.isFalse()
+                .join(qGroupMember.planner, qPlanner).fetchJoin()
+                .where(qPlanner.isPrivate.isFalse()
                         .and(qGroupMember.isHost.isTrue()))
                 .orderBy(qPlanner.id.desc())
                 .fetch();
@@ -52,6 +53,7 @@ public class PlannerQueryService {
 
         List<GroupMember> planners = queryFactory
                 .selectFrom(qGroupMember)
+                .join(qGroupMember.planner, qPlanner).fetchJoin()
                 .where(qGroupMember.user.id.eq(userId)
                         .and(qGroupMember.isLeaved.isFalse())
                 )
@@ -67,10 +69,11 @@ public class PlannerQueryService {
 
         List<GroupMember> planners = queryFactory
                 .selectFrom(qGroupMember)
+                .join(qGroupMember.planner, qPlanner).fetchJoin()
                 .where(qGroupMember.user.id.eq(userId)
                         .and(qGroupMember.planner.isPrivate.isFalse())
                         .and(qGroupMember.isLeaved.isFalse()
-                ))
+                        ))
                 .orderBy(qPlanner.id.desc())
                 .fetch();
 
@@ -78,28 +81,23 @@ public class PlannerQueryService {
     }
 
     @NotNull
-    public List<PlannerListResponse> getPlannerListResponses(List<GroupMember> planners) {
-        return planners.stream()
-                .collect(Collectors.groupingBy(GroupMember::getPlanner))
-                .entrySet()
-                .stream()
-                .map(entry -> {
-                    Planner planner = entry.getKey();
-                    List<GroupMember> groupMembers = entry.getValue();
+    public List<PlannerListResponse> getPlannerListResponses(List<GroupMember> groupMembers) {
+        return groupMembers.stream()
+                .map(planner -> {
+                    QGroupMember qGroupMember = QGroupMember.groupMember;
 
-                    String startDate = planner.getStartDate();
-                    String endDate = planner.getEndDate();
+                    List<GroupMember> members = queryFactory
+                            .selectFrom(qGroupMember)
+                            .where(qGroupMember.planner.id.eq(planner.getPlanner().getId()))
+                            .fetch();
 
-                    List<String> profileImages = new ArrayList<>();
-                    int lastId = groupMembers.size();
-                    if (lastId > 3) {
-                        lastId = 3;
-                    }
+                    String startDate = planner.getPlanner().getStartDate();
+                    String endDate = planner.getPlanner().getEndDate();
 
-                    for (int i = 0; i < lastId; i++) {
-                        String profileImgUrl = groupMembers.get(i).getUser().getProfile().getProfileImageUrl();
-                        profileImages.add(profileImgUrl);
-                    }
+                    List<String> profileImages = members.stream()
+                            .map(member -> member.getUser().getProfile().getProfileImageUrl())
+                            .limit(3)
+                            .collect(Collectors.toList());
 
                     if (startDate == null) {
                         startDate = "";
@@ -110,11 +108,11 @@ public class PlannerQueryService {
                     }
 
                     return new PlannerListResponse(
-                            planner.getId(),
-                            planner.getTitle(),
+                            planner.getPlanner().getId(),
+                            planner.getPlanner().getTitle(),
                             startDate,
                             endDate,
-                            planner.isPrivate(),
+                            planner.getPlanner().isPrivate(),
                             profileImages
                     );
                 })
@@ -133,11 +131,11 @@ public class PlannerQueryService {
                 )
                 .fetchOne();
 
-        if (!planner.getStartDate().isEmpty()) {
+        if (planner.getStartDate() != null && !planner.getStartDate().isEmpty()) {
             startDate = planner.getStartDate();
         }
 
-        if (!planner.getEndDate().isEmpty()) {
+        if (planner.getEndDate() != null && !planner.getEndDate().isEmpty()) {
             endDate = planner.getEndDate();
         }
 
