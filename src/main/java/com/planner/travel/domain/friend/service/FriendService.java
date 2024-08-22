@@ -30,7 +30,7 @@ public class FriendService {
         User tempFriend = userRepository.findById(request.friendUserId())
                 .orElseThrow(EntityNotFoundException::new);
 
-        if (friendQueryService.validateFriend(request.userId())) {
+        if (friendQueryService.validateFriend(request.userId()) == null) {
             Friend friend = Friend.builder()
                     .user(tempFriend)
                     .friend(user)
@@ -40,7 +40,14 @@ public class FriendService {
             friendRepository.save(friend);
 
         } else {
-          throw new EntityExistsException();
+            Long friendId = friendQueryService.validateFriend(request.userId());
+            Friend friend = friendRepository.findById(friendId)
+                    .orElseThrow(EntityNotFoundException::new);
+
+            if (friend.getStatus() == Status.UNFRIENDED) {
+                friend = friend.withIsRequest();
+                friendRepository.save(friend);
+            }
         }
     }
 

@@ -75,17 +75,17 @@ public class FriendQueryService {
         return friendResponses;
     }
 
-    public boolean validateFriend(Long userId) {
+    public Long validateFriend(Long userId) {
         QFriend qFriend = QFriend.friend1;
 
-        Long count = queryFactory
-                .select(qFriend.count())
+        Long friendId = queryFactory
+                .select(qFriend.id)
                 .from(qFriend)
                 .where(qFriend.user.id.eq(userId)
                         .and(qFriend.status.eq(Status.PENDING)))
                 .fetchOne();
 
 
-        return count == null;
+        return friendId;
     }
 }

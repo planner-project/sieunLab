@@ -39,6 +39,15 @@ public class Friend {
                 .build();
     }
 
+    public Friend withIsRequest() {
+        return Friend.builder()
+                .id(this.id)
+                .user(this.user)
+                .friend(this.friend)
+                .status(Status.PENDING)
+                .build();
+    }
+
     public Friend withIsAccepted() {
         return Friend.builder()
                 .id(this.id)
